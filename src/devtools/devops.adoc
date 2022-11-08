@@ -1,0 +1,189 @@
+= Vers la livraison continue
+// https://fr.wikipedia.org/wiki/Int%C3%A9gration_continue
+// https://fr.wikipedia.org/wiki/D%C3%A9ploiement_continu
+// https://fr.wikipedia.org/wiki/Livraison_continue
+
+== Collaborer avec un VCS et une forge
+//TODO
+
+== Intégration continue
+=== Introduction
+* L'_intégration continue_^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Continuous_integration"]^ (_continuous Integration_) est une pratique de développement où les membres d'une équipe intègrent fréquemment (au moins une fois par jour) leur travail
+* Un outil automatique est chargé de vérifier et de détecter les problèmes d'intégration au plus tôt
+* Est issu d'_Extreme Programming_
+* S'appuie généralement sur un _serveur d'intégration continue_
+
+.Quelques outils
+https://github.com/features/actions[GitHub Actions],
+https://about.gitlab.com/features/gitlab-ci-cd/[GitLab-CI],
+http://jenkins-ci.org/[Jenkins],
+https://drone.io/[drone.io],
+https://travis-ci.org/[Travis CI],
+http://cruisecontrol.sourceforge.net/[CruiseControl],
+
+ifdef::backend-revealjs[== !]
+
+=== Pratiques recommandées
+==== Maintenir un référentiel unique des sources
+* en général avec un outil de gestion de versions
+* tous les développeurs doivent utiliser ce référentiel
+* tout ce qui est nécessaire à la compilation doit se trouver dans le référentiel (tests, fichier de propriétés, scripts SQL, …)
+* limiter l'utilisation des branches (favoriser la branche principale)
+* ne placer aucun produit de la compilation dans le référentiel
+
+==== Automatiser les compilations
+* chaque tâche répétitive doit être automatisée (création de la BD, …)
+** _à partir d'une machine vierge, un checkout et une unique commande doit permettre d'obtenir un système utilisable_
+* l'outil doit permettre de ne recompiler que ce qui est nécessaire
+* l'outil doit permettre de définir différentes cibles
+* le système de compilation de l'IDE ne suffit pas
+
+ifdef::backend-revealjs[== !]
+
+==== Rendre les compilations auto-testantes
+* un ensemble de tests automatisés doit être disponible
+* la compilation doit inclure l'exécution des tests
+* l'échec d'un test doit être reporté comme un échec de la compilation
+
+==== Tout le monde valide chaque jour
+* des validations fréquentes favorisent une détection rapide des problèmes d'intégration
+** moins d'endroits où les conflits peuvent se produire
+** détection plus rapide des problèmes
+** encouragent les développeurs à découper leur travail en tâches plus courtes
+
+ifdef::backend-revealjs[== !]
+
+==== Chaque validation doit compiler la branche principale sur une machine d'intégration
+* permet d'avoir une compilation de référence
+* la validation dépend de la réussite de cette compilation
+* c'est en général le rôle du serveur d'intégration continue
+* le serveur notifie le développeur de la réussite de la compilation
+
+==== Maintenir une compilation courte
+* pour obtenir un feedback rapide
+* XP recommande un maximum de 10mn
+
+==== Tester dans un environnement de production cloné
+* chaque différence avec l'environnement de production peut conduire à des résultats de tests différents
+* parfois difficile mais il faut s'en approcher au maximum
+
+ifdef::backend-revealjs[== !]
+
+==== Rendre disponible facilement le dernier exécutable
+* chacun doit pouvoir utiliser la dernière version du système
+
+==== Tout le monde peut voir ce qui se passe
+* le but de l'intégration continue est de faciliter la communication
+* tout le monde doit voir l'état de la branche principale (compilation en cours, échec de la compilation, …)
+* et les changements apportés
+
+==== Automatiser le déploiement
+* la copie des exécutables dans les différents environnements doit être automatique
+* il peut être nécessaire de mettre aussi en place un mécanisme pour annuler un déploiement (en production par exemple)
+
+ifdef::backend-revealjs[== !]
+
+=== Intégration continue vs. outils d'intégration continue
+* L'intégration continue ne dépend pas d'un outil
+* C'est une pratique qui doit être acceptée par l'équipe de développement
+** la dernière version du code dans le référentiel doit toujours compiler et passer tous les tests
+** le code doit être validé fréquemment
+* Processus
+.. avant la validation, s'assurer que la compilation et les tests réussissent
+.. prévenir l'équipe de ne pas mettre à jour le référentiel à cause de l'intégration en cours
+.. valider
+.. aller sur la machine d'intégration, récupérer la dernière version du référentiel et s'assurer que la compilation et les tests réussissent
+.. prévenir l'équipe que les mises à jour peuvent reprendre
+* Un outil d'intégration continue permet d'automatiser l'étape 4
+
+== Gestion des binaires
+* Le _dépôt de binaires_^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Binary_repository_manager"]^ permet de centraliser l'entreposage et la distribution des résultats de la compilation
+* Il doit s'intégrer avec:
+** le serveur d'intégration continue,
+** le système de build utilisé.
+* Il gère également le contrôle d'accès aux différents paquets
+
+.Outils de gestion des binaires par langage
+[%header]
+|===
+| Java | Python
+
+| https://archiva.apache.org/[Archiva],
+http://www.sonatype.org/nexus/[Nexus],
+https://www.jfrog.com/artifactory/[Artifactory],
+| https://pip.pypa.io/en/stable/[pip],
+https://pypi.python.org/pypihttps://pypi.python.org/pypi[PyPI]
+
+|===
+
+== Déploiement^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Software_deployment"]^
+=== Livraison continue
+* La _livraison continue_ (_continuous delivery_) est une approche visant à
+** produire un logiciel en cycles courts,
+** pouvoir livrer le logiciel à tout moment.
+* La construction, les tests et la distribution doivent être plus fréquents
+* Cette approche s'appuie sur un déploiement fiable et reproductible
+* La décision de déployer reste manuelle
+
+ifdef::backend-revealjs[== !]
+
+=== Pipeline de déploiement
+* Un _pipeline de déploiement_ couvre trois aspects
+[horizontal]
+Visibilité:: Toutes les phases du processus de la livraison sont visibles par tous les membres de l'équipe
+Feedback:: Les problèmes doivent être remontés au plus tôt à l'équipe
+Automatisation:: Toute version du logiciel peut être déployée sur n'importe quelle plate-forme automatiquement
+* La construction du projet est décomposée en étapes successives
+** chaque étape améliore la confiance dans le logiciel
+** les premières étapes fournissent un feedback rapidement
+
+ifdef::backend-revealjs[== !]
+
+=== Déploiement continu
+* Le _déploiement continu_ (_continuous deployment_) doit permettre de déployer *automatiquement* en production tout changement
+* Peut conduire à mettre à jour le système en production plusieurs fois par jour
+
+[TIP]
+====
+.Quelques exemples
+* https://netflixtechblog.com/deploying-the-netflix-api-79b6176cc3f0[Deploying the Netflix API]
+* https://www.infoq.com/presentations/Facebook-Release-Process/[The Facebook Mobile Release Process]
+====
+
+ifdef::backend-revealjs[== !]
+
+=== Infrastructure as code
+* L'_Infrastructure as code_ consiste à gérer et installer les infrastructures (serveur physique, machine virtuelle, …) en utilisant des fichiers de description exécutables par la machine
+* Ces descriptions sont ensuite ajoutées dans le VCS pour maintenir les différentes versions
+* C'est une réponse à la question du passage à l'échelle pour l'installation de machines
+
+.Infrastructure as code
+https://www.ansible.com/[Ansible]/Ansible Tower,
+https://puppet.com/[Puppet]/ https://theforeman.org/[Foreman],
+https://www.chef.io/[Chef],
+
+ifdef::backend-revealjs[== !]
+
+=== Machine virtuelle
+* Une _machine virtuelle_ (VM) est une émulation d'un système informatique
+* Elles permettent d'optimiser l'usage des serveurs physiques et apportent de la souplesse
+    
+.Machine virtuelle
+https://www.virtualbox.org/[Virtualbox],
+https://en.wikipedia.org/wiki/QEMU[QEMU],
+
+https://www.packer.io/[Packer],
+https://www.vagrantup.com/[Vagrant]
+
+ifdef::backend-revealjs[== !]
+
+=== Conteneur logiciel
+* La virtualisation au niveau du système d'exploitation permet de mettre en place des espaces isolés nommés _conteneur_
+* Dans un conteneur, les processus sont isolés et l'OS propose un mécanisme de gestion des ressources
+* C'est une version évoluées du mécanisme de _chroot_^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Chroot"]^ disponible sous Unix
+
+.Conteneur
+https://podman.io/[podman],
+https://www.docker.com/[Docker],
+https://linuxcontainers.org/[Linux Containers],
+https://openvz.org/Main_Page[OpenVZ],

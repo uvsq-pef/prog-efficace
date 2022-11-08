@@ -1,0 +1,29 @@
+= Outils de développement
+ifndef::masterdoc[]
+include::../meta.adoc[]
+include::../attributes.adoc[]
+endif::masterdoc[]
+
+:leveloffset: +1
+
+include::intro.adoc[]
+
+// Outils du système d'exploitation (shells, ...)
+include::os.adoc[]
+
+// Écrire du code et collaborer
+include::writing.adoc[]
+
+// Débogage, tests et profilage
+include::dynamic.adoc[]
+
+// Qualité du code et documentation
+include::static.adoc[]
+
+// Construction d’un projet
+include::build.adoc[]
+
+// Vers la livraison continue
+include::devops.adoc[]
+
+:leveloffset: -1

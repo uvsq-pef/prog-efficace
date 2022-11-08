@@ -1,0 +1,12 @@
+= Modèles Mémoire
+ifndef::masterdoc[]
+include::../meta.adoc[]
+include::../attributes.adoc[]
+endif::masterdoc[]
+
+:leveloffset: +1
+
+include::gestion-memoire.adoc[]
+include::propriete.adoc[]
+
+:leveloffset: -1

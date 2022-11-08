@@ -1,0 +1,11 @@
+= Conclusion
+ifndef::masterdoc[]
+include::../meta.adoc[]
+include::../attributes.adoc[]
+endif::masterdoc[]
+
+:leveloffset: +1
+
+include::bilan.adoc[]
+
+:leveloffset: -1

@@ -1,0 +1,427 @@
+:imagesdir: figs/
+:stem:
+
+= Modèle mémoire Rust: propriété et emprunts 
+
+== Objectifs
+L'innovation majeure de Rust est son modèle mémoire qui combine:
+
+- des vérifications statiques qui permettent de détecter les problèmes mémoire
+- des abstractions à coût nul qui permettent de générer un code efficace
+
+Nous allons étudier les notions que Rust introduit pour garantir que les programmes sont corrects en mémoire, en particulier les notions de _Propriété_ (Ownership) et _Emprunt_ (Borrow).
+
+== Mutabilité 
+- Par défaut les variables sont immutables
+
+[source, rust]
+----
+    let a = 1;
+    let mut b = 1;
+    a = 2; // erreur: Cannot assign twice to immutable variable a
+    b = 2; // ok
+----
+
+== Les variables locales sont allouées sur la pile
+[source, rust]
+----
+fn main() {
+    let a : u32 = 1;
+    let b : f32 = 3.1415;
+    let c : [u32; 3] = [1, 2, 3];
+    let d = [0; 1 << 30]; // tableau avec 2^30 zéros => débordement de pile 
+}
+----
+
+- Les types primitifs de Rust sont alloués sur la pile.
+
+== Allocation sur le tas
+- Rust permet aussi d'allouer dynamiquement des objets sur le tas.
+- Par exemple, les vecteurs de type https://doc.rust-lang.org/std/vec/struct.Vec.html[`Vec<T>`] sont alloués sur le tas.
+
+[source, rust]
+----
+let v : Vec<u32> = vec![1,2,3]; // <1>
+----
+<1> Ici `v` est une variable locale (sur la pile) qui contient un pointeur vers une adresse du tas où l'objet de type `Vec<u32>` est alloué.
+
+== Propriétaire
+Pour toute donnée, rust définit une variable https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html[_propriétaire_].
+
+[IMPORTANT]
+====
+* Chaque valeur a un propriétaire.
+* À tout moment il ne peut y avoir qu'un et un seul propriétaire. 
+* Quand le propriétaire devient _hors-portée_, la valeur est supprimée.
+====
+
+[source, rust]
+----
+fn test() {
+    let a = 1.0; //<1>
+    let v = vec![1,2,3]; //<2>
+    // fin du bloc <3>
+}
+----
+<1> `a` est propriétaire du scalaire
+<2> `v` est propriétaire du vecteur
+<3> En fin de bloc `a` et `v` sont _hors-portée_. Leur mémoire est automatiquement libérée par rust. Le flottant `1.0` est dépilé et le vecteur désalloué avec un appel à ``drop()`.
+
+== Trait `Copy`
+- Les types primitifs (alloués sur la pile) implémentent le trait https://doc.rust-lang.org/core/marker/trait.Copy.html[`Copy`].
+- Lors d'une affectation, les données d'un type avec le trait `Copy` sont copiés.
+- Chaque variable est l'unique propriétaire de sa propre copie. L'invariant de « propriété unique » est satisfait.
+
+[source, rust]
+----
+fn main() {
+    let a = [1, 2, 3];
+    let mut b = a; // les trois cases du tableau sont copiées
+    b[1] = 5;
+    assert_eq!(a[1], 2); // a n'est pas modifié
+    assert_eq!(b[1], 5); // seul b est modifié
+}
+----
+
+== Passage par valeur
+- De même lors d'un appel de fonction, les types primitifs sont copiés.
+
+[source, rust]
+----
+fn modify(mut tab : [u32; 3]) {
+    tab[1] = 4; // c'est la copie locale tab qui est modifiée
+}
+
+fn main() {
+    let mut a = [1, 2, 3]; // (a n'a pas besoin d'être mutable)
+    modify(a); //l'argument passé par valeur (copie)
+    assert_eq!(a[1], 2); // a n'est pas modifié
+}
+----
+
+== Transfert de propriétaire (affectation)
+- Pour les types qui n'implémentent pas le trait `Copy`, une affectation déplace la propriété vers une nouvelle variable.
+
+[source, rust]
+----
+    let v1: Vec<u32> = vec![1, 2, 3]; // v1 est propriétaire du vecteur
+    let v2 = v1; // la propriété est transférée à v2
+    println!("{}", v1[0]); // erreur: ne peut plus être utilisé
+    // erreur: borrow of moved value v1
+----
+
+== Tranfert de propriétaire (appel de fonction) 
+- Même problème lors d'un appel de fonction, la propriété est transférée.
+
+[source, rust]
+----
+fn fun(v : Vec<u32>) { ... }
+
+fn main() {
+    let v1: Vec<u32> = vec![1, 2, 3]; // v1 est propriétaire du vecteur
+    fun(v1); // la propriété est transférée à l'argument v 
+    println!("{}", v1[0]); // erreur: borrow of moved value v1
+}
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Erreurs mémoire évitées par le transfert
+[source, c]
+----
+#include <stdlib.h>
+void fun(char * v) {
+  free(v);
+}
+
+int main() {
+  char * v1 = malloc(3);
+  fun(v1);
+  free(v1); // <1>
+}
+// free(): double free detected in tcache 2
+// Aborted (core dumped)
+----
+<1> Erreur en C à l'exécution. Impossible en Rust, car `v1` n'est plus propriétaire de la mémoire.
+
+== Comment appeler une fonction sans perdre la propriété ?
+
+[source, rust]
+----
+fn print(v: Vec<u32>) -> Vec<u32> {
+    println!("{:?}", v);
+    v // on retourne l'objet v pour transférer la propriété en retour
+}
+
+fn main() {
+    let v1: Vec<u32> = vec![1, 2, 3]; // v1 est propriétaire du vecteur
+    let v1 = print(v1); // l'appel cède puis récupère la propriété.
+    assert_eq!(v1[0], 1); // l'accès à v1[0] est possible 
+}
+----
+
+WARNING: Le code ci-dessus est correct mais pas idiomatique. C'est fastidieux de devoir passer la propriété en retour pour de nombreuses variables.
+
+== Emprunts
+- Un https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html[emprunt] permet de passer une référence à un objet sans en céder la propriété.
+
+[source, rust]
+----
+fn print(v: &Vec<u32>) { // la fonction travaille sur un emprunt elle n'est
+    println!("{:?}", v); // pas propriétaire du vecteur.
+}
+
+fn main() {
+    let v1: Vec<u32> = vec![1, 2, 3]; // v1 est propriétaire du vecteur
+    print(&v1); // on emprunte une référence sur le vecteur
+    assert_eq!(v1[0], 1);
+}
+----
+
+== Emprunts mutables
+- Par défaut les emprunts sont immutables. Pour pouvoir modifier l'objet emprunté, il nous faut un type `& mut`
+
+[source, rust]
+----
+fn fun(v: &mut Vec<u32>) {
+    v.push(4);
+}
+
+fn replace(v: &mut Vec<u32>) {
+    *v = vec![4,5]; //<1>
+}
+
+fn main() {
+    let mut v1: Vec<u32> = vec![1, 2, 3];
+    fun(&mut v1); // on emprunte une référence mutable sur le vecteur
+    assert_eq!(v1[3], 4);
+    replace(&mut v1);
+    assert_eq!(v1.len(), 2);
+}
+----
+<1> Pour modifier le contenu, il faut utiliser l'https://doc.rust-lang.org/book/ch15-02-deref.html[opérateur `*`] qui permet d'accéder à la valeur référencée.
+
+== Emprunts mutables ≠ Transfert de propriété
+- Un emprunt mutable n'est pas équivalent à un transfert de propriété
+- Par exemple, il n'est pas possible de désallouer une référence mutable 😊
+
+[source, rust]
+----
+fn fun(v: &mut Vec<u32>) {
+    drop(*v); // erreur: cannot move out of *v which is behind a mutable reference 
+}
+fn main() {
+    let mut v1: Vec<u32> = vec![1, 2, 3];
+    fun(&mut v1); // on emprunte une référence mutable sur le vecteur
+}
+----
+
+== Les trois règles des emprunts
+. Les emprunts ne peuvent pas avoir une durée de vie plus longue que celle du propriétaire.
+
+À un point dans le programme, il est possible d'emprunter:
+[start=2]
+. une ou plusieurs références `&T`
+. exactement une seule référence mutable `&mut T`
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple: erreur évitée avec la règle (1) 
+- Rust nous interdit de retourner une référence sur `x` car il ne peut pas garantir que sa durée de vie est suffisante.
+
+[source, rust]
+----
+fn fun() -> &u32 { // erreur: missing lifetime specifier
+    let x = 1;
+    &x
+}
+
+fn main() {
+    let y : &u32 = fun();  
+}
+----
+
+- En effet la mémoire de `x`, sur la pile, est libérée en sortie de fonction
+- En C, ceci est une source d'erreurs classique !
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple: erreur évitée avec les règles (2) et (3) 
+[source, rust]
+----
+fn main() {
+    let mut v = vec![1, 2, 3, 4];
+
+    rayon::join( // on lance deux threads concurrents
+        || {
+            v[0] = 5; // premier thread
+        },            
+        // erreur: cannot borrow `v` as mutable more than once at a time
+        || { 
+            v[0] = 4; // deuxième thread
+        },
+    );
+}
+----
+
+- Évite les problèmes d'accès concurrents. Ici les deux threads voudraient modifier le même tableau. 
+- Rust l'interdit car v est emprunté deux fois de manière mutable.
+
+== Exercice : un type Stack
+* Le but de l'exercice est de définir une structure de pile (_Stack_) en Rust
+** pour simplifier, la pile contiendra des entiers (_i32_)
+* Une pile peut être définie de manière récursive (comme une liste) de la façon suivante
+** une pile peut être soit la _pile vide_, soit un _élément au sommet d'une pile_
+** un type disjoint est représenté en Rust par un `enum`
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 1 : première tentative avec un `enum`
+.src/modeles-memoire/exemples/stack_0.rs
+[source,rust,indent=0]
+----
+include::exemples/stack_0.rs[tag=stack]
+----
+<1> La définition étant récursive, Rust ne peut pas déterminer la taille du type `Stack`
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 2 : un `enum` avec de l'allocation dynamique
+.src/modeles-memoire/exemples/stack_1.rs
+[source,rust,indent=0]
+----
+include::exemples/stack_1.rs[tag=stack]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Tests (src/modeles-memoire/exemples/stack_1.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_1.rs[tag=stacktst]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Opérations (src/modeles-memoire/exemples/stack_1.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_1.rs[tag=stackop]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 3 : première tentative avec tous les éléments sur le tas
+.src/modeles-memoire/exemples/stack_2.rs
+[source,rust,indent=0]
+----
+include::exemples/stack_2.rs[tag=stack]
+----
+<1> `Node` est privé et doit le rester
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 4 : deuxième tentative pour tous les éléments sur le tas
+.src/modeles-memoire/exemples/stack_3.rs
+[source,rust,indent=0]
+----
+include::exemples/stack_3.rs[tag=stack]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Tests (src/modeles-memoire/exemples/stack_3.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_3.rs[tag=stacktst]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Opérations (src/modeles-memoire/exemples/stack_3.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_3.rs[tag=stackop]
+----
+<1> `Link` n'implémente pas le _trait_ `Copy` donc Rust interdit le déplacement du sommet de la pile
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 5 : tous les éléments sur le tas
+.Opérations (src/modeles-memoire/exemples/stack_4.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_4.rs[tag=stackop]
+----
+<1> https://doc.rust-lang.org/std/mem/fn.replace.html[`std::mem::replace`] déplace le sommet de la pile dans `next` et le remplace par la valeur `Link::Empty`
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 5 : une petite amélioration
+.src/modeles-memoire/exemples/stack_4.rs
+[source,rust,indent=0]
+----
+include::exemples/stack_4.rs[tag=stack]
+----
+<1> Quel type de la bibliothèque standard pourrait remplacer `Link` ?
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 6 : en utilisant Option
+.src/modeles-memoire/exemples/stack_5.rs
+[source,rust,indent=0]
+----
+include::exemples/stack_5.rs[tag=stack]
+----
+<1> https://doc.rust-lang.org/std/option/enum.Option.html[`std::option::Option`] remplace avantageusement `Link`
+
+ifdef::backend-revealjs[== !]
+
+.Opérations (src/modeles-memoire/exemples/stack_5.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_5.rs[tag=stackop]
+----
+<1> https://doc.rust-lang.org/std/mem/fn.take.html[`std::mem::take`] déplace le sommet de la pile dans `next` et le remplace par la valeur par défaut du type `Option` (trait https://doc.rust-lang.org/std/default/trait.Default.html[`std::default::Default`])
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 7 : ajouter la méthode _pop_ (dépiler)
+.Tests (src/modeles-memoire/exemples/stack_6.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_6.rs[tag=stacktst]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Opérations (src/modeles-memoire/exemples/stack_6.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_6.rs[tag=stackop]
+----
+<1> https://doc.rust-lang.org/reference/expressions/if-expr.html#if-let-expressions[`if let`] déconstruit la valeur de type `Option`
+<2> le même problème que pour `push` se pose
+
+ifdef::backend-revealjs[== !]
+
+=== Étape 8 : la méthode _pop_ (dépiler)
+.Opérations (src/modeles-memoire/exemples/stack_7.rs)
+[source,rust,indent=0]
+----
+include::exemples/stack_7.rs[tag=stackop]
+----
+
+== Références
+
+- https://doc.rust-lang.org/1.22.0/book/second-edition/[The Rust book, first and second editions]
+- http://cis198-2016s.github.io/[CIS 198 U. Pennsylvania: Rust programming lectures]
+- https://stanford-cs242.github.io/f18/lectures/05-1-rust-memory-safety.html[Memory safety in Rust]
+
+[TIP]
+====
+Expérimentez
+
+* Propriété ({rustlings}/move_semantics[rustlings], {rbp}/ownership/ownership.html[Rust By Practice], {rbe}/scope/move.html[Rust by Example])
+* Emprunt ({rbp}/ownership/borrowing.html[Rust By Practice], {rbe}/scope/borrow.html[Rust by Example])
+====

@@ -1,0 +1,258 @@
+:imagesdir: figs/
+:stem:
+
+= Rust: Types composites et constructions spécifiques
+
+== Tableaux
+* Le type primitif https://doc.rust-lang.org/std/primitive.array.html[tableau] permet de manipuler
+** des collections de taille fixe
+** allouées sur la pile
+** d'éléments de même type
+* La création d'un tableau se fait :
+** à partir d'une liste d'éléments entre `[]` (`[1, 3, 5, 7]`), ou
+** à partir d'une expression et d'un nombre de copies (`[x; N]` _N_ copies de _x_)
+* L'accès aux éléments se fait par indice (`t[0]`)
+
+.src/rust/exemples/array.rs
+[source,rust,indent=0]
+----
+include::exemples/array.rs[tag=array]
+----
+
+== Les vecteurs
+- Pour représenter un tableau de valeurs de taille variable, Rust propose le type https://doc.rust-lang.org/std/vec/struct.Vec.html[`Vec<T>`]
+- Les vecteurs sont alloués dynamiquement sur le tas.
+
+.création d'un vecteur (src/rust/exemples/vec.rs)
+[source,rust,indent=0]
+----
+include::exemples/vec.rs[tag=create]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Accéder aux éléments d'un vecteur (src/rust/exemples/vec.rs)
+[source,rust,indent=0]
+----
+include::exemples/vec.rs[tag=access]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Initialisation avec une taille connue (src/rust/exemples/vec.rs)
+[source,rust,indent=0]
+----
+include::exemples/vec.rs[tag=init]
+----
+<1> `usize` est le type entier pour les positions d'un vecteur.
+
+ifdef::backend-revealjs[== !]
+
+.Itérer sur un vecteur (src/rust/exemples/vec.rs)
+[source,rust,indent=0]
+----
+include::exemples/vec.rs[tag=iter]
+----
+
+ifdef::backend-revealjs[== !]
+
+.Itérer sur un vecteur sans référence (src/rust/exemples/vec.rs)
+[source,rust,indent=0]
+----
+include::exemples/vec.rs[tag=iterv]
+----
+<1> ERREUR : _borrow of moved value: `v`_. Nous verrons précisément ce point dans le cours sur le _Borrow Checker_.
+
+== Généricité 
+- Le type de `vec![1,2,3]` est `std::Vec<i32>`
+- Le type de `vec!["a","b","c"]` est `std::Vec<&str>`
+- `std::Vec<T>` est https://doc.rust-lang.org/book/ch10-01-syntax.html[générique de paramètre `T`]
+- `T` peut être remplacé ici par tout autre type
+- Les méthodes de `std::Vec<T>` peuvent utiliser le type générique:
+
+[source, rust]
+----
+pub fn push(&mut self, value: T)   // empile un élément en fin de vecteur
+pub fn pop(&mut self) -> Option<T> // dépile un élément
+----
+
+== Structures
+- Une structure est un type composite composé de membres
+
+.src/rust/exemples/struct.rs
+[source,rust,indent=0]
+----
+include::exemples/struct.rs[tag=struct]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Constructeur
+- On appelle _constructeur_ une fonction qui retourne une instance de la structure.
+- Dans le cours suivant nous verrons comment associer directement des méthodes à une structure.
+
+.src/rust/exemples/struct.rs
+[source,rust,indent=0]
+----
+include::exemples/struct.rs[tag=cons]
+----
+
+== Tuples
+- Le type primitif https://doc.rust-lang.org/std/primitive.tuple.html[tuples] regroupe un ensemble de valeurs de types hétérogènes
++
+.src/rust/exemples/tuple.rs
+[source,rust,indent=0]
+----
+include::exemples/tuple.rs[tag=tuple]
+----
+<1> le type de `tuple` est `(&'static str, i32, char)`
+<2> accès aux champs par `.0`, `.1`, …
+<3> _pattern matching_ pour déconstruire le tuple
+- Les https://doc.rust-lang.org/book/ch05-01-defining-structs.html#using-tuple-structs-without-named-fields-to-create-different-types[structures tuples] sont un cas particulier de structure où les membres ne sont pas nommés (similaires au type primitif tuple)
++
+.src/rust/exemples/tuple.rs
+[source,rust,indent=0]
+----
+include::exemples/tuple.rs[tag=tuplestruct]
+----
+
+== Enum
+- Les types https://doc.rust-lang.org/reference/items/enumerations.html[`Enum`] sont des types disjoints.
+- Chaque instance ne peut avoir qu'un seul des types à la fois.
+
+.src/rust/exemples/enum.rs
+[source,rust,indent=0]
+----
+include::exemples/enum.rs[tag=enum]
+----
+<1> `Variant` peut contenir au choix un entier signé, une chaîne ou rien du tout.
+
+== Pattern matching
+- Le https://doc.rust-lang.org/book/ch06-02-match.html[_pattern matching_] permet de
+** représenter un structure conditionnelle avec plusieurs branches
+** déconstruire les types composites
+- Le _pattern matching_ est très pratique pour manipuler les types `Enum`
+
+.src/rust/exemples/enum.rs
+[source,rust,indent=0]
+----
+include::exemples/enum.rs[tag=match]
+----
+
+== Gestion des erreurs
+- En C/C++, on représente souvent l'absence de valeur par un pointeur https://en.cppreference.com/w/cpp/language/nullptr[`nullptr`].
+** cet usage est cause de nombreuses erreurs difficiles à détecter, c'est pourquoi Rust interdit les références nulles.
+- Rust utilise le type https://doc.rust-lang.org/std/option/enum.Option.html[`Option<T>`] avec deux variants
+** `None` qui représente l'absence de valeur
+** `Some(T)` qui représente une valeur de type `T` (`T` est un type générique)
+
+ifdef::backend-revealjs[== !]
+
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=option]
+----
+<1> https://doc.rust-lang.org/reference/expressions/if-expr.html#if-let-expressions[`if let`] permet de déconstruire une valeur d'un type composite
+
+ifdef::backend-revealjs[== !]
+
+=== std::Result<T,E>
+- https://doc.rust-lang.org/std/result/enum.Result.html[`Result`] est semblable à une option mais permet d'encoder une erreur de type `E`.
+
+[source, rust]
+----
+enum Result<T, E> {
+    Ok(T),
+    Err(E)
+}
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Erreurs fatales
+- Souvent une fonction a intérêt à retourner un `Result` à l'appelant et lui laisser décider de la marche à suivre en cas d'erreur.
+- Parfois, cela n'a pas de sens et il vaut mieux arrêter le programme avec la macro `panic!()`:
+
+[source, rust]
+----
+panic!("This is not implemented yet.");
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Consommation de la valeur `Result`
+- Contrairement à `Option``, un `Result` doit toujours être utilisé.
+- Le compilateur génère un avertissement si un `Result` n'est pas consommé.
+
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=result]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Conversions entre Result<T, E> et Option<T>
+- Les types `Result` et `Option` sont proches.
+- Il est possible de convertir un `Result` en `Option` avec `res.ok()` et inversement avec `opt.ok_or(err)`.
+
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=conv]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Gestion fine d'erreurs
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=error]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Raccourci avec expect
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=expect]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Propagation d'Erreurs
+- Vos propres fonctions peuvent retourner des erreurs
+
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=ownresult]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Opérateur `?`
+- Écrire du code qui propage les erreurs est fastidieux
+- L'opérateur `?` peut-être utilisé dans les fonctions qui retournent `Result` pour en faciliter l'écriture
+** si le résultat est `Err`, l'opérateur `?` retourne l'erreur.
+** si le résultat est `Ok(x)`, l'opérateur `?` retourne `x`.
+
+.src/rust/exemples/option.rs
+[source,rust,indent=0]
+----
+include::exemples/option.rs[tag=opint]
+----
+<1> À chaque utilisation de ? si une erreur se produit, celle-ci est directement retournée et on sort de la fonction
+
+== Exercice
+
+Faire une somme de nombres imaginaires.
+
+.src/rust/exemples/imag.rs
+[source,rust,indent=0]
+----
+include::exemples/imag.rs[]
+----

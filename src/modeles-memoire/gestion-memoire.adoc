@@ -1,0 +1,247 @@
+= Gestion de la mémoire
+
+== Mémoire physique et mémoire virtuelle
+.Mémoire physique et mémoire virtuelle (source icon:wikipedia-w[link="https://commons.wikimedia.org/wiki/File:Memoire_virtuelle.svg?uselang=fr"])
+image::virtmem.svg[Mémoire virtuelle,303,480,role=right]
+* L'accès à la mémoire physique d'un ordinateur est « simplifiée » par l'utilisation du mécanisme de _mémoire virtuelle_
+** la mémoire virtuelle fournit une *abstraction* pour l'accès à la mémoire
+* Ce mécanisme permet de
+** utiliser une mémoire de masse à la place de la mémoire vive
+** protéger les accès à la mémoire
+** partager des zones de mémoire entre processus
+* La mémoire virtuelle repose sur de nombreux mécanismes pour son fonctionnement (_pagination_ ou _segmentation_, _traduction d'adresses_, _Memory Management Unit_ ou _MMU_, …)
+
+.Références
+* Article icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/M%C3%A9moire_virtuelle"] sur la mémoire virtuelle
+* Chapitre sur la https://fr.wikibooks.org/wiki/Fonctionnement_d%27un_ordinateur/La_m%C3%A9moire_virtuelle[mémoire virtuelle] du cours https://fr.wikibooks.org/wiki/Fonctionnement_d%27un_ordinateur[Fonctionnement d'un ordinateur]
+
+== Mémoire d'un processus
+.Mémoire d'un processus (source icon:wikipedia-w[link="https://commons.wikimedia.org/wiki/File:Typical_computer_data_memory_arrangement.png"])
+image::memlayout.png[Mémoire d'un processus,201,597,role=right]
+* L'OS et le matériel travaillent de concert pour que chaque processus ait l'impression
+** de disposer d'une vaste zone de mémoire contiguë
+** d'être seul à s'exécuter
+* La zone du programme comprend
+** le segment _text_ qui contient le code du programme
+** le segment des données non initialisées (_Block Stating Symbol_ ou _BSS_)
+** le segment des données initialisées (_Data_)
+* Le tas (_heap_) représente la mémoire allouée dynamiquement
+** croît vers les adresses hautes
+* La mémoire libre sert de réserve
+* La pile (_Stack_) conserve les variables locales d'une fonction
+** débute à la plus haute adresse et croît vers les adresses basses
+** contient un cadre (_frame_) pour chaque fonction
+** lors d'un appel de fonction, sont empilés l'adresse de retour de la fonction, les paramètres, les variables locales de la fonction
+** lorsque l'on quitte une fonction, le cadre correspondant est supprimé
+** sa taille est réservée statiquement
+
+.Référence
+* https://ilay.org/yann/articles/mem/[Gestion de la mémoire en C]
+
+== Problèmes et erreurs liés à la mémoire
+* De nombreuses erreurs peuvent conduire à des problèmes d'utilisation de la mémoire
+* Les exemples suivants sont en langage C
+
+.Déréférencement d'un pointeur null ou invalide
+[source,c,indent=0]
+----
+int *ptr; // pointeur non initialisé
+int var = *ptr; // déréférencement invalide
+----
+
+ifdef::backend-revealjs[== !]
+
+.Références multiples à une même zone mémoire
+[source,c,indent=0]
+----
+int* ptr = malloc(sizeof(int)); // alloue une zone mémoire pour un entier
+int* ptr2 = ptr; // ptr2 pointe sur la même zone mémoire
+*ptr = 5; // OK
+free(ptr); // libère la zone
+ptr = NULL;
+// ...
+*ptr2 = 10; // accès à la zone déjà libérée
+----
+
+ifdef::backend-revealjs[== !]
+
+.Fuite mémoire (allocation sans désallocation)
+[source,c,indent=0]
+----
+int* ptr = malloc(sizeof(int)); // alloue une zone mémoire pour un entier
+ptr = malloc(sizeof(int)); // ptr est réutilisé (pas de free préalable => memory leak)
+free(ptr); // libération du second malloc
+----
+
+ifdef::backend-revealjs[== !]
+
+.Passage d'un argument par valeur
+[source,c,indent=0]
+----
+void set(int i) {
+    i = 3; // la variable locale est modifiée
+}
+int main(void) {
+    int i = 2;
+    set(i); // lors de l'appel, la valeur de i est copiée sur la pile
+    // la valeur de i n'a pas changée
+    return 0;
+}
+----
+
+ifdef::backend-revealjs[== !]
+
+.Adressage sur la pile
+[source,c,indent=0]
+----
+char *init_string() {
+	char buff[16]; // le tableau est alloué sur la pile (variable locale)
+    // ...
+	return buff;
+}
+int main(void) {
+	char *str = init_string(); // str pointe sur une zone invalide (frame de init_string)
+	return 0;
+}
+----
+
+ifdef::backend-revealjs[== !]
+
+.Dépassement de l'espace alloué
+[source,c,indent=0]
+----
+int[] ptr = malloc(10 * sizeof(int)); // alloue une zone pour 10 entier (ptr[0] à ptr[9])
+int a = ptr[10]; // accès au-delà de la zone alloué
+----
+
+ifdef::backend-revealjs[== !]
+
+.Désallocation d'un zone non allouée (ou désallocations multiples)
+[source,c,indent=0]
+----
+int *ptr; // pointeur non initialisé
+free(ptr); // libération d'une zone non allouée
+----
+
+== Réduire le risque d'erreurs liées à la mémoire
+* Comme vu précédemment, les risques d'erreurs liées à l'utilisation de la mémoire sont nombreux
+* Il est donc raisonnable de vouloir simplifier la tâche du développeur
+* Deux approches sont possibles
+** proposer une gestion automatique de la mémoire (Java, Python, …)
+** proposer un modèle plus strict et des bibliothèques (Rust)
+
+== Gestion automatique de la mémoire
+* La gestion automatique de la mémoire s'appuie sur un processus particulier dénommé _ramasse-miettes_ (_garbage collector_)
+* Il est responsable de la libération de la mémoire allouée à des objets qui ne sont plus utiles
+** détermine quels objets ne peuvent plus être utilisés par le programme
+** récupère l'espace occupé par ces objets
+* Différentes approches peuvent être utilisées
+** le comptage de références,
+** les algorithmes traversant,
+** les algorithmes générationnels
+* Un ramasse-miettes possède plusieurs avantages
+** élimine presque totalement les problèmes de désallocation de la mémoire
+** peut optimiser les allocations/désallocation (meilleures performances)
+* Un ramasse-miettes comporte plusieurs inconvénients
+** s'exécute en parallèle du programme (ralentissements)
+** s'exécute _de temps en temps_ (peu prévisible, utilisation de plus de mémoire)
+
+ifdef::backend-revealjs[== !]
+
+.Approches par comptage de références
+* Chaque zone mémoire alloués est associée à un compteur qui matérialise le nombre de références à cette zone
+* Les zones ayant un compteur à zéro peuvent être supprimées
+* Permet la libération rapide des zones
+* La gestion des compteurs est coûteuse en temps de calcul et en espace mémoire
+* Les cycles dans le graphe des références ne sont pas gérés
+
+ifdef::backend-revealjs[== !]
+
+.Approches traversantes
+* L'algorithme parcourt les objets en mémoires pour déterminer s'ils sont accessibles
+* Le parcours est initialisé à partir de références racines
+* Les objets qui n'ont pas été visités peuvent être éliminés
+
+ifdef::backend-revealjs[== !]
+
+.Approches générationnelles
+* L'idée est que la plupart des objets vont avoir une durée de vie courte
+* Les objets sont répartis en plusieurs générations (2 ou 3 en général)
+* Un objet passe à la génération supérieure s'il n'a pas été éliminé lors de l'exécution du ramasse-miette
+* Des algorithmes différents peuvent être appliqués aux différentes générations
+
+ifdef::backend-revealjs[== !]
+
+.Références
+* Article icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Ramasse-miettes_(informatique)"] sur le ramasse-miette
+* https://blogs.oracle.com/javamagazine/understanding-garbage-collectors[Understanding Garbage Collectors], _Christine H. Flood_, Java Magazine
+* https://blogs.oracle.com/javamagazine/understanding-the-jdks-new-superfast-garbage-collectors[Understanding the JDK’s New Superfast Garbage Collectors], _Raoul-Gabriel Urma_ & _Richard Warburton_, Java Magazine
+* https://blogs.oracle.com/javamagazine/epsilon-the-jdks-do-nothing-garbage-collector
+
+== Pointeurs en Rust
+* Le type de pointeur le plus simple en Rust est la référence (symbole `&`)
+** emprunte une valeur
+** pas de fonctionnalités supplémentaires
+** pas de surcoût (par rapport à un pointeur en C)
+* Les _smart pointers_ sont des structures
+** se comportant comme des pointeurs
+** fournissant des fonctionnalités complémentaires
+
+== Smart pointers
+* Plusieurs types de https://doc.rust-lang.org/book/ch15-00-smart-pointers.html[smart pointers] sont fournis par la bibliothèque standard
+* Ils sont en général implémentés avec des structures et possèdent la donnée qu'ils encapsulent
+* Chaque type de smart pointer propose des fonctionnalités spécifiques
++
+[horizontal]
+`Box<T>`:: alloue des valeurs sur le tas
+`Rc<T>`:: permet la propriété multiple par comptage de références
+`Ref<T>` et `RefMut<T>`:: contrôle les règles d'emprunt à l'exécution plutôt qu'à la compilation
+* Ils implémentent les traits `Deref` et `Drop`
++
+[horizontal]
+`Deref`:: fait qu'une instance se comporte comme une référence
+`Drop`:: permet d'adapter le code exécuté quand le pointeur quitte sa portée
+
+== Smart pointer `Box<T>`
+* Le smart pointer https://doc.rust-lang.org/std/boxed/struct.Box.html[`Box<T>`] permet d'allouer une valeur sur le tas
+* Pas de surcoût supplémentaire
+* Pas d'autres capacités particulières
+* Utilité
+** quand la taille d'un type ne peut pas être connue à la compilation
+** pour éviter de copier une grande quantité de données lors du transfert de propriété
+** pour manipuler des objets traits
+
+== Le trait `Deref`
+* Le trait https://doc.rust-lang.org/std/ops/trait.Deref.html[`Deref`] permet d'adapter l'opérateur de déréférencement `*`
+* Un smart pointer peut de cette façon être manipulé comme une référence
+* Implémenter ce trait nécessite de
+** définir le type `Target`
+** implémenter la fonction `fn deref(&self) -> &Self::Target`
++
+[source,rust,indent=0]
+----
+use std::ops::Deref;
+
+struct MyBox<T>(T);
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+----
+* L'expression `\*x` si `x` est une structure est réécrite `*(x.deref())`
+
+== Le trait `Drop`
+* Le trait https://doc.rust-lang.org/std/ops/trait.Drop.html[`Drop`] permet d'adapter le code exécuté lorsqu'un smart pointer sort de sa portée (_destructeur_)
+* Implémenter ce trait consiste à définir la fonction `fn drop(&mut self)`
+* Cette fonction ne peut pas être appelée explicitement mais l'est par le compilateur
+
+== Smart pointer `Rc<T>`
+* La structure https://doc.rust-lang.org/std/rc/struct.Rc.html[`Rc<T>`] permet de partager la propriété d'une valeur allouée sur la pile entre plusieurs propriétaires
+* Elle utilise un système de comptage de références
+* L'appel de https://doc.rust-lang.org/std/rc/struct.Rc.html#impl-Clone[`clone`] crée un nouveau pointeur sur la même valeur
+* Quand le dernier pointeur `Rc` est détruit, la valeur est elle-même détruite
+* Cette structure ne peut pas être utilisée dans un contexte multi-thread

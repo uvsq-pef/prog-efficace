@@ -1,0 +1,12 @@
+= Rust
+ifndef::masterdoc[]
+include::../meta.adoc[]
+include::../attributes.adoc[]
+endif::masterdoc[]
+
+:leveloffset: +1
+
+include::cons-specifiques.adoc[]
+include::poo.adoc[]
+
+:leveloffset: -1

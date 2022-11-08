@@ -1,0 +1,325 @@
+:imagesdir: figs/
+:stem: latexmath
+:revealjs_customtheme: reveal.js/css/theme/beige.css
+:customcss: custom.css
+:revealjs_slideNumber: true
+
+
+
+= Optimisations de code 
+
+== Mesure de performance
+
+- On ne peut pas optimiser ce que l'on ne peut pas mesurer.
+
+- On peut mesurer le temps, l'énergie, la mémoire, la qualité du code.
+
+- Souvent énergie et temps de calcul sont liés: __race to idle__.
+
+== Mesurer la performance 
+
+image::performance1.png[Mesure de performance, 500]
+
+- CPI: Cycles par Instruction. Plus les CPI sont bas plus le code est rapide.
+- Impact de la taille d'un tableau pour un accès mémoire.
+
+== Mesurer la performance 
+
+image::performance2.png[Mesure de performance, 500]
+
+- Importance d'explorer différents paramètres en entrée
+
+== Exemple
+
+- On mesure deux codes:
+    * code 1 : 8.56 secondes
+    * code 2 : 8.94 secondes
+- Accélération (__speedup__) (8.94-8.56)/8.94 = 4.2% ?
+
+== Attention au bruit de mesure
+
+image::dispersion.png[Bruit de mesure, 500]
+
+- Pas de différence significative avec 30 mesures
+- Répéter les mesures et étudier leur dispersion. 
+
+== Bruit de mesure
+
+- Importance de prendre en compte le bruit de mesure. 
+- Sources d'indéterminisme:
+    * Hiérarchie mémoire: Caches, TLB, Buffers E/S, Disque dur, swap
+    * Pipeline d'instructions
+    * Entrelacement des threads
+    * DVFS / C-States et P-States
+
+== Pour stabiliser les mesures
+
+- Exécutez une première fois votre programme pour charger les données dans le buffer E/S (sauf si vous souhaitez en mesurer l'effet).
+- Utiliser _pinning_ de processus (évite que les threads soient migrés en cours d'exécution).
+- Désactivez le DVFS de votre processeur (gouverneur performance)
+- Évitez de faire tourner d'autres processus et augmentez la priorité du processus mesuré avec `nice -20`
+
+== Comment mesurer ?
+
+- Insertion de sondes directement dans le code. Pour Rust, vous pouvez utiliser le crate https://doc.rust-lang.org/1.4.0/book/benchmark-tests.html[`Bencher`].
+
+[source,rust]
+----
+pub fn add_two(a: i32) -> i32 {
+    a + 2
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn bench_add_two(b: &mut Bencher) {
+        b.iter(|| add_two(2));
+    }
+}
+----
+
+[source,bash]
+----
+$ cargo bench
+   Compiling adder v0.0.1 (file:///home/steve/tmp/adder)
+     Running target/release/adder-91b3e234d4ed382a
+
+running 2 tests
+test tests::bench_add_two ... bench:         1 ns/iter (+/- 0)
+----
+
+== Comment mesurer ?
+
+- Utiliser un outil externe. Par exemple pour mesurer des compteurs de performance: RAPL, cache misses, cycles, etc.
+
+    - De nombreux outils disponibles (**Perf**, Likwid, MAQAO, PAPI, VTune, ...)
+
+- Sous Linux, l'outil https://perf.wiki.kernel.org/index.php/Tutorial[perf] permet d'interroger directement le noyau pour accéder à ces compteurs.
+
+- Example: pour mesurer les cycles, le nombre d'instructions, ainsi que les cache misses:
+
+[source,bash]
+----
+perf stat -e cycles,instructions,cache-misses ./programme
+----
+
+== Hiérarchie Mémoire
+
+image::arch.svg[Architecture d'un ordinateur, 500]
+
+
+Trois niveaux de cache (architectures serveur)
+
+- L3 (partagé)
+- L2 (par cœur)
+- L1 données et instruction 
+
+== Latences (Nehalem)
+
+|===
+|Niveau | Latence
+|L1 (hit)| ~4 cycles
+|L2 (hit)| ~10 cycles
+|L3 (non partagée)| ~40 cycles
+|L3 (partagée) | 65-75 cycles
+|RAM | > 120 cycles
+|SSD | ~300 000 cycles
+|===
+
+== Fonctionnement basique d'un Cache
+
+. Le CPU demande une adresse mémoire au L1.
+. Si l'adresse est disponible dans le L1, c'est un *hit*.
+. Sinon c'est un *miss*, le L1 demande au niveau supérieur, ici le L2, de lui transmettre la donnée.
+. La demande remonte la hiérarchie mémoire jusqu'à ce que la donnée soit trouvée.
+
+== Fonctionnement basique d'un Cache
+
+- Pour être efficace les données sont déplacées par paquets, les *lignes de cache* (typiquement 64 octets).
+- Le bus mémoire détecte les accès linéaires à la mémoire et récupère les données en avance (_prefetcher_).
+
+[source,rust]
+----
+for i in 0..n {
+    a[i] += 1;
+}
+----
+
+image:prefetch.png[Prefetcher, 200]
+
+== Politique de remplacement 
+
+- LRU (Last Recently Used)
+- Les données les plus anciennement utilisées sont remplacées en premier.
+- Des politiques complexes permettent d'assurer la cohérence des données partagées en L3.
+
+== Problème de capacité
+
+[source,rust]
+----
+for i in 0..n {
+  for j in 0..n {
+    a[j][i] += 1;  // a[j][i] => a[j*n+i]
+  }
+}
+----
+
+
+image:capacity.png[Capacity, 600]
+
+== Importance de la localité
+
+Pour optimiser l'accès à la mémoire, on conçoit notre algorithme pour maximiser
+
+- Localité spatiale: on accède aux données dans l'ordre des adresses mémoire 
+- Localité temporelle: si des données sont réutilisées, on diminue le temps entre deux réutilisations pour éviter qu'elles soient remplacées entre temps dans le cache. 
+
+== Un exemple d'optimisation: transformations de boucles
+
+- Transformations de boucles: souvent effectuées automatiquement par le compilateur.
+
+- Pour que la transformation soit faite, le compilateur doit prouver que la sémantique du code ne change pas.
+
+- Dans certains cas, le compilateur n'arrive pas à faire tout seul la transformation.
+
+== Loop interchange
+
+[source,rust]
+----
+for i in 0..n {
+	for j in 0..n {
+		a[j][i] = a[j][i]*a[j][i];
+    }
+}
+----
+
+Comment optimiser ce code ?
+
+== Loop interchange
+
+image:loop-interchange.png[Loop interchange]
+
+
+== Loop-invariant code motion
+
+[source,rust]
+----
+for i in 0..n {
+	for j in 0..n {
+		a[i][j] = c[i] + b[i][j]
+	}
+}
+----
+
+Comment optimiser ce code ?
+
+== Loop-invariant code motion
+
+image:loop-invariant-cm.png[Loop invariant code motion]
+
+== If hoisting
+
+[source,rust]
+----
+for i in 1..n {
+	a[i] = a[i] + 1 ;
+	if i<3 { 
+		b[i] = a[i]*c[i];
+    } else {
+		b[i] = a[i-1]*b[i-1];
+    }
+}
+----
+
+Comment optimiser ce code ?
+
+== If hoisting
+
+image:if-hoisting.png[If hoisting]
+
+
+== Loop fusion / fission
+
+image:loop-fusion-fission.png[Loop fusion - fission]
+
+- Comment choisir ? Cela dépend de l'architecture. Les compilateurs utilisent des modèles de coût. 
+
+== Loop peeling
+
+[source,rust]
+----
+for i in 0..n {
+	a[i] = a[i] + 2;
+}
+for i in 2..n {
+	a[i] = a[i] * 2;
+}
+----
+
+Comment optimiser ce code ?
+
+== Loop peeling
+
+image:loop-peeling.png[Loop Peeling]
+
+== Loop unroll
+
+[source,rust]
+----
+for i in 0..n {
+    c[i] += b[i] + a[i];
+}
+----
+
+Comment optimiser ce code ?
+
+== Loop unroll
+
+image:loop-unroll.png[Loop Unroll]
+
+- Réduit le surcoût de contrôle.
+- Parfois, permet de vectoriser le code.
+- Parfois, fait apparaître des simplifications.
+
+== Loop blocking ou tiling
+
+image:loop-blocking.png[Loop Blocking]
+
+- `n` grand: `b[]` ne rentre pas dans le cache.
+- Localité spatiale: ok.
+- Localité temporelle: problème sur `b[j]`.
+- Comment optimiser ce code ?
+
+== Loop blocking ou tiling
+
+image:loop-blocking2.png[Loop Blocking]
+
+== Un mot rapide sur la parallélisation
+
+Les architectures récentes sont multicœurs, pour en tirer parti les programmes peuvent être _parallélisés_.
+
+- Décomposer le travail en parties indépendantes. Chaque partie sera effectuée par un _thread_ dans un cœur différent.
+
+- Limiter au maximum les communication et synchronisations entre threads (coûteuses).
+
+== Exemple de parallélisation en rust
+
+[source,rust]
+----
+extern crate rayon;
+use rayon::prelude::*;
+fn main() {
+    let mut v = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    
+    v.par_chunks_mut(3).for_each(|chunk| {
+        for x in chunk { *x *= 2; }
+    });   
+}
+----
+
+- `par_chunks` et `par_chunks_mut` décomposent un itérateur en morceaux (`chunks`) indépendants.
+- la méthode `for_each` va exécuter un traitement parallèle sur chaque morceau.
+- `|chunk| { ... }` est une clôture. C'est une fonction anonyme qui peut capturer les variables de l'environnement où elle est déclarée. 

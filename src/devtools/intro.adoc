@@ -1,0 +1,9 @@
+= Au delà de l'éditeur et du compilateur
+* Les outils à la disposition d'un développeur de logiciels ne se limite pas à un éditeur de texte et un compilateur/interpréteur
+* De nombreux outils existent pour assister le développeur dans ses multiples tâches:
+[horizontal]
+Écrire du code et collaborer:: éditeurs de texte, environnements de développement intégrés, gestion de versions
+Exécution contrôlée d'un programme:: débogage, tests et profilage
+Qualité du code et documentation:: styles de codage, génération de documentation
+Construction d’un projet:: automatisation de la gestion de la compilation et des dépendances
+Livraison et déploiement:: automatisations et livraison continue

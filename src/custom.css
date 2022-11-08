@@ -1,0 +1,8 @@
+.reveal {
+    font-size: 30px;
+}
+
+.reveal section img {
+  border: none;
+  box-shadow: none;
+}

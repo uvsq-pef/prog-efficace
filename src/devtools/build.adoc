@@ -1,0 +1,141 @@
+= Construction d’un projet
+// https://fr.wikipedia.org/wiki/Moteur_de_production
+
+== Implémentation et distribution
+* Pour la plupart des langages, plusieurs _implémentations_ sont disponibles
+** certaines sont généralistes
+** d'autres sont spécialisées pour un type particulier de situation
+* De même, pour plus de simplicité d'usage, les langages sont proposées sous la forme d'une _distribution_
+* Une distribution va regrouper une implémentation du langage avec les bibliothèques standards ainsi que des outils de développement
+
+.Implémentations par langage
+[%header]
+|===
+| Rust | Java | Python
+
+| https://doc.rust-lang.org/rustc/index.html[rustc]
+| http://openjdk.java.net/groups/hotspot/[HotSpot] (http://openjdk.java.net/[OpenJdk]),
+https://www.eclipse.org/openj9/[OpenJ9] (https://www.eclipse.org/[Eclipse]),
+https://www.graalvm.org/[GraalVM]
+| https://fr.wikipedia.org/wiki/CPython[CPython],
+http://www.jython.org/[Jython],
+http://ironpython.net/[IronPython],
+http://pypy.org/[PyPy]
+
+|===
+
+.Distributions par langage
+[%header]
+|===
+| Rust | Java | Python
+
+| https://www.rust-lang.org/tools/install[rustup]
+| http://openjdk.java.net/[OpenJdk]/ https://adoptopenjdk.net/[AdoptOpenJDK],
+http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle Java SE],
+https://www.microsoft.com/openjdk[Microsoft Build of OpenJDK]
+| https://www.python.org/downloads/[Distribution de référence],
+https://www.continuum.io/anaconda-overview[Anaconda]
+
+|===
+
+== Automatisation du __build__
+* La gestion de la compilation^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Build_automation"]^ (_Build automation_) consiste à automatiser les tâches répétitives des développeurs
+** compilation (mode normal, mode débogage, …), génération de la version de distribution, génération de la documentation et des notes de version, lancement des tests, déploiement
+* Ces tâches sont alors réalisées plus efficacement et moins sujettes aux erreurs
+** évite les fastidieuses lignes de commande
+** permet une compilation « intelligente »
+** rend le processus reproductible
+* Peut être déclenché
++
+[horizontal]
+à la demande:: l'utilisateur exécute un script
+par un ordonnanceur:: exécuté à un instant donné
+par un événement:: provoqué par un événement particulier
+
+ifdef::backend-revealjs[== !]
+
+.Outils de build par langage
+[%header]
+|===
+| Rust | Java/Scala | C/C++ | Autres
+
+| https://doc.rust-lang.org/cargo/index.html[Cargo]
+| https://gradle.org/[Gradle],
+https://maven.apache.org/[Maven],
+http://ant.apache.org[Ant],
+http://www.scala-sbt.org/[sbt]
+| http://www.gnu.org/software/make[Make],
+https://cmake.org/[CMake]
+| http://docs.seattlerb.org/rake/[Rake],
+https://waf.io/[Waf],
+http://www.scons.org/[SCons]
+
+|===
+
+== Cargo
+* https://doc.rust-lang.org/cargo/index.html[Cargo] est le système de build et le gestionnaire de dépendances de Rust
+* Cargo permet de simplifier certaines tâches comme
+** la construction du projet,
+** la gestion des bibliothèques.
+* Il propose également une manière standard (_conventions_) d'organiser un projet Rust
+
+ifdef::backend-revealjs[== !]
+
+=== Créer un projet
+* La commande https://doc.rust-lang.org/cargo/commands/cargo-new.html[`cargo new hello_cargo`] permet de créer un projet
+** crée un répertoire `hello_cargo`,
+** initialise un dépôt `git` (option `--vcs`),
+** ajoute la description du projet dans `Cargo.toml`
+** ajoute un fichier source dans `src/main.rs` (ou `src.lib.rs` avec l'option `--lib`)
+* La commande https://doc.rust-lang.org/cargo/commands/cargo-init.html[`cargo init`] initialise un projet Cargo dans le répertoire courant
+* Un projet Cargo respecte des https://doc.rust-lang.org/cargo/guide/project-layout.html[conventions d'organisation] de l'arborescence du projet
+
+ifdef::backend-revealjs[== !]
+
+=== Description du projet
+* La https://doc.rust-lang.org/cargo/reference/manifest.html[description du projet] se trouve dans le fichier `Cargo.toml` qui est au format https://toml.io/[TOML] (Tom’s Obvious Minimal Language)
++
+[source,toml,indent=0]
+----
+[package] <1>
+name = "hello_cargo"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies] <2>
+----
+<1> La section `package` décrit le projet (un _package_ Rust)
+<2> La section `dependencies` liste les bibliothèques dont dépend le projet
+
+ifdef::backend-revealjs[== !]
+
+=== Principales commandes Cargo
+[horizontal]
+https://doc.rust-lang.org/cargo/commands/cargo-build.html[build]:: construit le projet avec le https://doc.rust-lang.org/book/ch14-01-release-profiles.html#customizing-builds-with-release-profiles[profil] par défaut (par exemple `target/debug/hello_cargo`)
++
+[NOTE]
+====
+* Les versions des bibliothèques sont entérinées dans le fichier `Cargo.lock` (_reproductibilité_ du build)
+* L'option `--release` génère un exécutable optimisé dans `target/release`
+====
+https://doc.rust-lang.org/cargo/commands/cargo-run.html[run]:: construit puis exécute le programme
+https://doc.rust-lang.org/cargo/commands/cargo-check.html[check]:: vérifie que le programme compile sans générer d'exécutable
+https://doc.rust-lang.org/cargo/commands/cargo-update.html[update]:: met à jour les versions des dépendances
+https://doc.rust-lang.org/cargo/commands/cargo-test.html[test]:: construit et exécute les tests
+https://doc.rust-lang.org/cargo/commands/cargo-clean.html[clean]:: supprime les artefacts issus de la compilation
+https://doc.rust-lang.org/cargo/commands/cargo-doc.html[doc]:: construit la documentation du projet
+
+ifdef::backend-revealjs[== !]
+
+=== Gestion des dépendances
+* L'ajout d'une bibliothèque dans le projet se fait en ajoutant une ligne dans la section `dependencies` de `Cargo.toml`
++
+[source,toml,indent=0]
+----
+[dependencies]
+rand = "0.8.3"
+----
+* La ligne pour intégrer une bibliothèque précise:
+** le nom du _crate_ disponible sur https://crates.io/[`crates.io`],
+** la version dont dépend le projet.
+* Le https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html[schéma d'une version] suppose que la bibliothèque respecte une gestion sémantique des versions (http://semver.org/[SemVer])

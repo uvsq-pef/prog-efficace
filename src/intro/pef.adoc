@@ -1,0 +1,23 @@
+= Programmation efficace
+
+== Objectifs du cours « Programmation efficace »
+* Comprendre les mécanismes utilisés dans les langages de programmation et leur impact sur l'efficacité des applications
+* Découvrir les caractéristiques d'un langage statiquement typé et compilé
+* Présenter les outils de développement associés (compilateur, build, tests)
+* Sensibiliser aux difficultés liées à la gestion de la mémoire, à la gestion d'erreurs, aux I/O, au multi-threading
+* Mettre en évidence les différences d'efficacité liées aux points précédents
+
+== Qu'entend-on par efficacité ?
+* La notion d'efficacité couvre un large spectre de critères
+** performances à l'exécution (temps d'exécution, cycles CPU, consommation mémoire)
+** performances énergétiques (consommation d'énergie, impact environnemental)
+* Certains de ces critères peuvent être antagonistes
+* Les choix finaux relèvent souvent d'un compromis
+* La question de l'efficacité peut aussi se poser pour le cycle de développement lui-même
+
+== Références
+* https://reberhardt.com/cs110l/[CS 110L: Safety in Systems Programming] (https://reberhardt.com/blog/2020/10/05/designing-a-new-class-at-stanford-safety-in-systems-programming.html[blog])
+* _Portegies Zwart, S._ https://arxiv.org/pdf/2009.11295.pdf[The Ecological Impact of High-performance Computing in Astrophysics]. Nat Astron 4, 819–822 (2020) : article dans Nature qui compare l'impact carbone de différents langages de programmation pour des codes d'astrophysique
+* _Rui Pereira, and al._ https://greenlab.di.uminho.pt/wp-content/uploads/2017/09/paperSLE.pdf[Energy efficiency across Programming Languages]: how do energy, time, and memory relate? In Proceedings of the 10th ACM SIGPLAN International Conference on Software Language Engineering (SLE 2017). Association for Computing Machinery, New York, NY, USA, 256–267 : article dans SLE qui mesure l'efficacité énergétique de plusieurs langages de programmation
+* _Cyrille Bonamy_, et al.. https://hal.archives-ouvertes.fr/hal-03009741/[Je code : les bonnes pratiques en éco-conception de service numérique à destination des développeurs de logiciels]. 2022, pp.1-19. ⟨hal-03009741v4⟩
+* _Kheira Bettayeb_. https://lejournal.cnrs.fr/articles/comment-rendre-les-applications-moins-energivores[Comment rendre les applications moins énergivores ?]. CNRS Le journal, 2022.

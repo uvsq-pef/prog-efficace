@@ -1,0 +1,521 @@
+= Concepts objet en Rust
+== Introduction
+* Les choix de conception du langage ne proposent pas formellement de notion d'objet
+* Selon les définitions, Rust supporte ou ne supporte pas la programmation objet
+* Les concepts du langage permettent d'implémenter les concepts objets de façon efficace et élégante
+
+== Objet
+* Lors de son exécution, un _système OO_ est *un ensemble d'objets qui interagissent*
+** les objets forment donc l'_aspect dynamique_ (à l'exécution) d'un système OO
+* Un _objet_ est formé de deux composants indissociables
+[horizontal]
+son _état_::: les valeurs prises par des variables le décrivant (_propriétés_)
+son _comportement_::: les opérations qui lui sont applicables
+* Un objet est une _instance_ d'une _classe_
++
+NOTE: Dans certains langages objet (https://selflanguage.org/[Self] ou les anciennes versions de https://fr.wikipedia.org/wiki/JavaScript[Javascript]), la notion de classe n'existe pas. Les objets sont alors créés à partir de modèles nommés https://fr.wikipedia.org/wiki/Programmation_orient%C3%A9e_prototype[_prototypes_].
+* Un objet peut avoir plusieurs types, i.e. supporter plusieurs interfaces
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : des points et des cercles
+[plantuml,points_and_circles,png]
+....
+object point1 {
+  x = 1.0
+  y = 2.0
+}
+
+object point2 {
+  x = 1.0
+  y = 2.0
+}
+
+object cercle1 {
+  rayon = 2.0
+}
+
+cercle1 *-- point1
+....
+
+* Les objets `point1` et `point2` sont des points, `cercle1` est un cercle
+* L'état de chaque objet est représenté par la valeur de ses propriétés
+* Le centre du cercle est une référence sur un objet point
+* Le comportement n'est pas représenté au niveau des objets
+** une opération est invoquée par rapport à un objet
+** mais est rattachée à la classe (le code est partagé par tous les objets d'une classe)
+* Les objets `point1` et `point2` sont égaux mais pas identiques
+
+== Encapsulation et masquage de l'information
+* L'_encapsulation_ consiste à regrouper au sein d'une unique entité des données et des routines les manipulant
+* Ce principe est souvent associé au _masquage de l'information_ qui permet de cacher les détails d'implémentation
+* Ce sont des piliers de l'approche objet
+** isole les structures internes de leur utilisation et donc autorise leur modification sans impact sur l'interface
+** permet d'ajouter des règles de validation ou des contraintes d'intégrité sur les données
+** contrôle le _couplage_ entre les modules
+
+== Objets en Rust
+* Rust ne propose pas d'objet en tant que tel
+* Cependant, les valeurs d'un type se comportent de la même façon
+* De plus, par défaut, la structure interne des types Rust est privée
+
+[source,rust,indent=0]
+----
+fn main() {
+    let mut v : Vec<i32> = Vec::new();
+    v.push(12);
+    v.len = 15;
+    println!("{:?}", v);
+}
+----
+
+[source,bash,indent=0]
+----
+$ rustc vec.rs
+error[E0616]: field `len` of struct `Vec` is private
+ --> vec.rs:4:7
+  |
+4 |     v.len = 15;
+  |       ^^^ private field
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0616`.
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : des points et des cercles en Rust
+[source,rust,indent=0]
+----
+include::shapes/tests/integration_tests.rs[tag=circles_and_points]
+----
+<1> la valeur de `point1` est déplacée et `point1` n'est donc plus valide
+
+== Communication par messages
+* Un objet solitaire n'a que peu d'intérêt ⇒ différents objets doivent pouvoir interagir
+* Un _message_ est un moyen de communication (d'interaction) entre objets
+* *Les messages sont les seuls moyens d'interaction entre objets*
+** ⇒ l'état interne ne doit pas être manipulé directement
+* Le (ou les) type(s) d'un objet détermine les messages qu'il peut recevoir
+
+== Message
+* Un message est une requête envoyée à un objet pour demander l'exécution d'une opération
+* Un message comporte trois composants:
+** *l'objet auquel il est envoyé* (le destinataire du message),
+** le nom de l'opération à invoquer,
+** les paramètres effectifs.
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : déplacer un cercle
+[plantuml,moving_circle,png]
+....
+actor User
+
+User-> cercle1: translate(1.0, 2.0)
+activate cercle1
+
+cercle1 -> centre: translate(1.0, 2.0)
+activate centre
+centre --> cercle1: Ok
+deactivate centre
+
+cercle1 --> User: Ok
+deactivate cercle1
+....
+
+* L'utilisateur envoie un message à un objet (à une instance de) cercle
+* Le message se traduit par l'exécution de l'opération `translate(1.0, 2.0)` par l'objet cercle
+* Durant cette exécution, le cercle envoie un message à l'objet point (translater le cercle revient à translater son centre)
+
+== Méthodes en Rust
+* Le concept de https://doc.rust-lang.org/book/ch05-03-method-syntax.html[_méthode_] implémente les messages
+* Une _méthode_
+** est définie dans le contexte d'une structure, d'une énumération ou d'un trait,
+** possède toujours un premier paramètre nommé `self` et représentant l'instance sur laquelle la méthode est invoquée
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : le rayon du cercle
+[source,rust,indent=0]
+----
+impl Circle {
+include::shapes/src/circle.rs[tag=circle_radius]
+}
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : déplacer un cercle
+[source,rust,indent=0]
+----
+include::shapes/tests/integration_tests.rs[tag=move_a_circle]
+----
+
+== Fonction associée
+* Une https://doc.rust-lang.org/book/ch05-03-method-syntax.html#associated-functions[_fonction associée_] (_associated functions_) est une fonction définie dans le contexte d'une structure mais sans le paramètre `self`
+* Cette fonction est alors invoquée par l'intermédiaire du nom de la structure (`Rectangle::square(3)`)
+* Cette notion est à rapprocher du concept de _méthode de classe_
+* Une fonction qui retourne une instance d'une structure est dénommée _constructeur_
+
+[source,rust,indent=0]
+----
+impl Point {
+include::shapes/src/point.rs[tag=point_from]
+}
+----
+
+== Type
+* Un _type_ est un modèle abstrait réunissant à un haut degré les traits essentiels de tous les êtres ou de tous les objets de même nature
+* En informatique, un _type (de donnée)_ spécifie:
+** l'ensemble des valeurs possibles pour cette donnée (définition en _extension_),
+** l'ensemble des opérations applicables à cette donnée (définition en _intention_).
+* Un type spécifie l'_interface_ par laquelle une donnée peut être manipulée
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : un type Déplaçable
+[plantuml,deplacable,png]
+....
+interface Déplaçable {
+    +translate(dx: réel, dy: réel)
+}
+....
+
+== Type en Rust : les _traits_
+* Un https://doc.rust-lang.org/book/ch10-02-traits.html[_trait_] (`trait`) précise un ensemble d'opérations dont doit disposer un type*
+* Une méthode d'un trait peut être abstraite ou disposer d'une implémentation par défaut
+* Un trait est proche de la notion d'_interface_ ou de _classe abstraite_ dans d'autres langages
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : le _trait_ Déplaçable
+[source,rust,indent=0]
+----
+include::shapes/src/movable.rs[]
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : l'implémentation du _trait_ Déplaçable dans Point
+[source,rust,indent=0]
+----
+include::shapes/src/point.rs[tag=point_movable_impl]
+----
+
+== Classe
+* Une _classe_ est un "modèle" (un "moule") pour une catégorie d'objets structurellement identiques
+* Une classe définit donc l'implémentation d'un objet (son état interne et le codage de ses opérations)
+* L'ensemble des classes décrit l'_aspect statique_ d'un système OO
+
+ifdef::backend-revealjs[== !]
+
+=== Structure d'une classe
+* Une classe comporte:
+** la définition des _attributs_ (ou _variables d'instance_),
+** la _signature_ des opérations (ou _méthodes_),
+** la _réalisation_ (ou _définition_) des méthodes.
+* Chaque instance aura sa propre copie des attributs (son état)
+* La signature d'une opération englobe son nom et le type de ses paramètres
+* L'ensemble des signatures de méthodes représente l'interface de la classe (publique)
+* L'ensemble des définitions d'attributs et de méthodes forme l'implémentation de la classe (privé)
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : les classes `Cercle2D` et `Point2D`
+[plantuml,classe_point_cercle,png]
+....
+class Point2D {
+    - x : réel
+    - y : réel
+    +translate(dx: réel, dy: réel)
+}
+
+class Cercle2D {
+    - rayon : réel
+    +translate(dx: réel, dy: réel)
+}
+
+Cercle2D *-- Point2D
+....
+
+* Un rectangle représente une classe
+** 1er pavé: nom de la classe
+** 2ième pavé: attributs
+** 3ième pavé: signature des méthodes
+* en général, les attributs sont privés et les méthodes publiques
+
+ifdef::backend-revealjs[== !]
+
+=== Instanciation d'une classe
+* Le mécanisme d'_instanciation_ permet de créer des objets à partir d'une classe
+* Chaque objet est une instance d'une classe
+* Lors de l'instanciation,
+** de la mémoire est allouée pour l'objet,
+** l'objet est initialisé (appel du constructeur) afin de respecter l'invariant de la classe.
+
+== Classes en Rust
+* Les https://doc.rust-lang.org/book/ch05-01-defining-structs.html[structures] (`struct`) et les https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html[énumérations] (`enum`) permettent de créer de nouveaux types de données
+* Les _champs_ d'une structure ou les _variantes_ d'une énumération peuvent être associés à des fonctions grâce à des https://doc.rust-lang.org/reference/items/implementations.html[blocs d'implémentation] (`impl`)
+* L'encapsulation est assurée par les différentes constructions du langage (fonctions, méthodes, structures, énumérations, modules, et constantes)
+** par défaut, tout est privé
+** le https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html#exposing-paths-with-the-pub-keyword[mot-clé `pub`] permet d'exporter les constructions souhaitées
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : la structure Cercle
+[source,rust,indent=0]
+----
+include::shapes/src/circle.rs[]
+----
+
+== Classe et type
+* Une classe implémente un ou plusieurs types, i.e. respecte une ou plusieurs interfaces
+* Un objet peut avoir plusieurs types mais est une instance d'une seule classe
+* Des objets de classes différentes peuvent avoir le même type
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : cercles et points sont de type Déplaçable
+[plantuml,classe_et_type,png]
+....
+interface Déplaçable {
+    +translate(dx: réel, dy: réel)
+}
+
+class Point2D {
+    - x : réel
+    - y : réel
+    +translate(dx: réel, dy: réel)
+}
+
+class Cercle2D {
+    - rayon : réel
+    +translate(dx: réel, dy: réel)
+}
+
+Cercle2D *-- Point2D
+Déplaçable <|.. Point2D
+Déplaçable <|.. Cercle2D
+....
+
+== Sous-type
+[IMPORTANT]
+====
+Un type T~1~ est un _sous-type_ d'un type T~2~ si l'interface de T~1~ contient l'interface de T~2~.
+
+De façon duale, un type T~1~ est un _sous-type_ d'un type T~2~ si l'ensemble des instances de T~2~ inclut l'ensemble des instances de T~1~.
+====
+
+* Un sous-type possède une interface plus riche, i.e. au moins toutes les opérations du super-type
+* De manière équivalente, l'extension du super-type contient l'extension du sous-type, i.e. tout objet du sous-type est aussi instance du super-type
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : Déplaçable et Modifiable
+[plantuml,deplacable_et_redimensionnable,png]
+....
+interface Déplaçable {
+    +translate(dx: réel, dy: réel)
+}
+
+interface Modifiable {
+    +redimensionne(échelle: réel)
+}
+
+Déplaçable <|-- Modifiable
+....
+
+== Héritage
+* L'_héritage_ permet de définir l'implémentation d'une classe à partir de l'implémentation d'une autre
+* Ce mécanisme permet, lors de la définition d'une nouvelle classe, de ne préciser que ce qui change par rapport à une classe existante
+* Une _hiérarchie de classes_ permet de gérer la complexité, en ordonnant les classes au sein d'arborescences d'abstraction croissante
+* Si Y hérite de X, on dit que
+** Y est une classe _fille_ (_sous-classe_, _classe dérivée_) et que
+** X est une classe _mère_ (_super-classe_, _classe de base_)
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : rectangle et rectangle plein
+
+[plantuml,rectangle_et_rectangle_plein,png]
+....
+class Rectangle2D {
+    -orig : Point2D
+    -fin : Point2D
+    +translate(dx: réel, dy: réel)
+}
+
+class Rectangle2DPlein {
+    -couleur : Couleur
+    +colorie(couleur : Couleur)
+}
+
+Rectangle2D <|-- Rectangle2DPlein
+....
+
+== Héritage en Rust
+[NOTE]
+====
+* Le langage Rust ne supporte pas l'héritage tel qu'il est décrit ci-dessus.
+* Le principe https://en.wikipedia.org/wiki/Composition_over_inheritance[Composition over inheritance] encourage l'utilisation de la composition par rapport à l'héritage pour la conception objet
+** ce principe est souvent utilisé dans les _Design Patterns_
+====
+
+* Il est toutefois possible de manipuler des éléments sous la forme d'_objet trait_ (https://doc.rust-lang.org/stable/book/ch17-02-trait-objects.html[_trait object_])
+* Un tel objet pointe vers une instance d'un type implémentant le trait concerné
+** la taille d'un objet trait ne peut pas être déterminée lors de la compilation
+* Le type d'un objet trait est construit à partir d'un type de pointeur (référence ou smart pointer), du mot-clé `dyn` et du nom du trait
+* Un objet trait dispose d'une _table de méthodes virtuelles_ (_vtable_)
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : objet trait
+[source,rust,indent=0]
+----
+include::shapes/tests/integration_tests.rs[tag=circle_as_movable]
+----
+<1> Seules les méthodes du trait sont accessibles (typage statique)
+
+== Héritage et sous-typage
+* L'héritage (ou _héritage d'implémentation_) est un mécanisme technique de réutilisation
+* Le sous-typage (ou _héritage d'interface_) décrit comment un objet peut être utilisé à la place d'un autre
+* Si Y est une sous-type de X, cela signifie que "Y est une sorte de X" (relation _IS-A_)
+* Dans un langage de programmation, les deux visions peuvent être représentées de la même façon:
+le mécanisme d'héritage permet d'implémenter l'un ou l'autre
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : héritage d'implémentation et d'interface
+[plantuml,heritage_et_interface,png]
+....
+interface Déplaçable {
+    +translate(dx: réel, dy: réel)
+}
+
+interface Modifiable {
+    +redimensionne(échelle: réel)
+}
+
+Déplaçable <|-- Modifiable
+
+abstract class Forme {
+    + {abstract} translate(dx: réel, dy: réel)
+}
+
+class Rectangle2D {
+    -orig : Point2D
+    -fin : Point2D
+    +translate(dx: réel, dy: réel)
+    +redimensionne(échelle: réel)
+}
+
+Forme <|-- Rectangle2D
+Déplaçable <|.. Forme
+Modifiable <|.. Rectangle2D
+....
+
+== Polymorphisme
+* Le _polymorphisme_ est l'aptitude qu'ont des objets à réagir différemment à un même message
+* L'intérêt est de pouvoir gérer une collection d'objets de façon homogène tout en conservant le comportement propre à chaque type d'objet
+* Une méthode commune à une hiérarchie de classe peut avoir plusieurs implémentations dans différentes classes
+* Une sous-classe peut _redéfinir_ une méthode de sa super-classe pour spécialiser son comportement
+* Le choix de la méthode à appeler est retardé jusqu'à l'exécution du programme (https://en.wikipedia.org/wiki/Dynamic_dispatch[_dynamic dispatch_])
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : une description pour les rectangles
+
+[plantuml,description_des_rectangles,png]
+....
+class Rectangle2D {
+    -orig : Point2D
+    -fin : Point2D
+    +translate(dx: réel, dy: réel)
+    +toString() : String
+}
+
+class Rectangle2DPlein {
+    -couleur : Couleur
+    +colorie(couleur : Couleur)
+    +toString() : String
+}
+
+Rectangle2D <|-- Rectangle2DPlein
+....
+
+== Polymorphisme en Rust
+* La table des méthodes virtuelles d'un objet trait permet de retarder le choix de la méthode à exécuter au moment de l'exécution
+
+.Déplacer des formes
+[source,rust,indent=0]
+----
+include::shapes/tests/integration_tests.rs[tag=move_shapes]
+----
+
+== Classe abstraite
+* Une _classe abstraite_ représente un concept abstrait qui ne peux pas être instancié
+* En général, son comportement ne peut pas être intégralement implémenté à cause de son niveau de généralisation
+* Elle sera donc seulement utilisée comme classe de base dans une hiérarchie d'héritage
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : La hiérarchie d'héritage des figures
+[plantuml,hierarchie_heritage,png]
+....
+abstract class Forme {
+    + {abstract} translate(dx: réel, dy: réel)
+}
+
+class Rectangle2D {
+    +translate(dx: réel, dy: réel)
+}
+
+class Cercle2D {
+    +translate(dx: réel, dy: réel)
+}
+
+Forme <|-- Cercle2D
+Forme <|-- Rectangle2D
+....
+
+== Classe abstraite en Rust
+NOTE: Rust ne comporte pas de notion aussi générale que celle de classe abstraite cependant les traits permettent d'approcher ce comportement dans certains contextes.
+
+== Héritage multiple et à répétition
+* Un _héritage multiple_ se produit lorsqu'une classe possède plusieurs super-classes
+* Un _héritage à répétition_ se produit lorsqu'une classe hérite plusieurs fois d'une même super-classe
+* Ces types d'héritage peuvent provoquer des conflits aux niveaux des attributs et méthodes
+** deux classes de base peuvent posséder la même méthode,
+** un attribut peut être hérité selon plusieurs chemins dans le graphe d'héritage.
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : une hiérarchie pour les véhicules
+[plantuml,heritage_multiple,png]
+....
+abstract class Véhicule {
+    -noImmatriculation
+    + {abstract} avance(distance : Distance)
+}
+
+class Bateau {
+    +avance(distance : Distance)
+}
+
+class Voiture {
+    +avance(distance : Distance)
+}
+
+class VoitureAmphibie {
+}
+
+Véhicule <|-- Bateau
+Véhicule <|-- Voiture
+Bateau <|-- VoitureAmphibie
+Voiture <|-- VoitureAmphibie
+....
+
+* Combien de numéros d'immatriculation possède la voiture amphibie ?
+* Quelle opération est invoquée quand une voiture amphibie reçoit le message `avance` ?

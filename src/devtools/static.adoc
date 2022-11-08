@@ -1,0 +1,277 @@
+= Qualité du code et documentation
+// https://fr.wikipedia.org/wiki/Analyse_statique_de_programmes
+// Assurance qualité (icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Software_quality"])
+
+== Conventions de codage
+=== Styles de codage
+* Améliore la lisibilité du code source
+** le code est plus facile à comprendre
+** le code est plus facile à maintenir
+* On s'appuie généralement sur l'éditeur de texte et/ou un outil de vérification
+
+IMPORTANT: L'important est de choisir un style et de s'y tenir !
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : un extrait de code Java ne respectant pas de convention
+.Que fait cet extrait de code ?
+[source,java]
+----
+public static <T extends Comparable<? super T>> void f(List<T> l) {
+int s=l.size();
+int i,j;
+for(i=0;i<s-1;++i)
+{
+for(j=0;j<s-1-i;++j){
+if(l.get(j+1).compareTo(l.get(j))<0){
+T t=l.get(j);
+l.set(j,l.get(j+1));l.set(j+1,t);
+}}}
+}
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple : un extrait de code Java respectant une convention
+.Que fait cet extrait de code ?
+[source,java]
+----
+/**
+  * Tri la liste passée en paramètre en ordre croissant
+  * en respectant l'ordre naturel de ses éléments.
+  * Les éléments de la liste doivent implémenter
+  * l'interface <code>Comparable</code>.
+  * Cet méthode utilise un algorithme de tri a bulle.
+  *
+  * @param aList la liste à trier
+  */
+public static <T extends Comparable<? super T>> void bubbleSort(List<T> aList) {
+int size = aList.size();
+for (int i = 0; i < size - 1; ++i) {
+    for (int j = 0; j < size - 1 - i; ++j) {
+    if (aList.get(j+1).compareTo(aList.get(j)) < 0) { // compare les deux voisins
+        // échange les deux voisins
+        T tmp = aList.get(j);
+        aList.set(j, aList.get(j + 1));
+        aList.set(j + 1, tmp);
+    }}		
+}}
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Quelques conventions
+.Style de codage par langage
+[%header]
+|===
+| Plusieurs | Rust | Java | Python | C++
+
+| https://google.github.io/styleguide/[Google Style Guides], Google, 2014.
+https://www.pearson.com/us/higher-education/program/Martin-Clean-Code-A-Handbook-of-Agile-Software-Craftsmanship/PGM63937.html[Clean Code: A Handbook of Agile Software Craftsmanship], Robert C. Martin, Pearson, 2009.
+| https://doc.rust-lang.org/1.0.0/style/[Rust Style Guidelines]
+| https://www.oracle.com/java/technologies/javase/codeconventions-contents.html[Java code conventions], SUN, 1999.
+http://www.ambysoft.com/essays/javaCodingStandards.html[Coding standards for Java], AmbySoft, 2007.
+http://fluxens.com/javastyle.html[Java Programming Style Guidelines], Fluxens.
+https://horstmann.com/bigj/style.html[Java Language Coding Guidelines], http://horstmann.com/[Cay Horstmann], 2004.
+| https://www.python.org/dev/peps/pep-0008/[PEP 8],
+http://pep8.org/[PEP 8 — the Style Guide for Python Code],
+| https://www.pearson.com/uk/educators/higher-education-educators/program/Sutter-C-Coding-Standards-101-Rules-Guidelines-and-Best-Practices/PGM543690.html[C++ Coding Standards: 101 Rules, Guidelines, and Best Practices], Herb Sutter, Andrei Alexandrescu, Pearson, 2005.
+
+|===
+
+ifdef::backend-revealjs[== !]
+
+=== Thèmes abordés par les conventions
+Structure et contenu d'un fichier source:: _Files longer than 2000 lines are cumbersome and should be avoided._
+Conventions de nommage:: _Class names should be nouns, in mixed case with the first letter of each internal word capitalized._
+Format et emplacement des commentaires:: _Short comments can appear on a single line indented to the level of the code that follows._
+Indentation des lignes:: _Four spaces should be used as the unit of indentation._
+Format des déclarations, des instructions et emplacement des espaces:: _Each line should contain at most one statement._
+Quelques bonnes pratiques:: _Don't make any instance or class variable public without good reason._
+
+ifdef::backend-revealjs[== !]
+
+=== Audit des conventions de codage
+* Des outils permettent de réaliser un audit des fichiers sources
+* Génèrent un rapport des violations des conventions de codage
+* Sont généralement configurables pour différentes conventions
+
+.Outils de vérification des conventions par langage
+[%header]
+|===
+| Rust | Java | Python
+
+| https://github.com/rust-lang/rust-clippy[clippy]
+| http://checkstyle.sourceforge.net/[CheckStyle],
+http://jcsc.sourceforge.net/[JCSC],
+| https://www.pylint.org/[Pylint]
+
+|===
+
+ifdef::backend-revealjs[== !]
+
+=== Outils de reformatage
+* Mettre en conformité le code source avec des conventions
+* Concerne uniquement la mise en forme du code (indentation, espaces, …)
+* La plupart des IDE assurent également ce service
+
+.Outils
+* https://github.com/rust-lang/rustfmt[rustfmt]
+
+== Documenter un code source
+//TODO différences entre documenter une API et documenter pour un développeur
+
+=== Qu'est-ce qu'une bonne documentation^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Software_documentation#Technical_documentation"]^ ?
+* Un commentaire doit clarifier le code
+** la documentation du code doit permettre à une autre personne de mieux comprendre le code
+* Documentez pourquoi les choses sont faites et pas simplement ce qui est fait
+** ne paraphrasez pas le code
+* Rédigez des commentaires simples et concis
+* Écrivez la documentation avant d'écrire le code
+** permet de définir l'objectif en premier
+* Évitez les commentaires décoratifs (bannières, …)
+** ajoute peu de valeurs à la documentation
+** est une perte de temps
+
+IMPORTANT: Idéalement, un code bien écrit doit se suffire à lui-même, i.e. doit se lire (et se comprendre) facilement sans commentaire.
+
+ifdef::backend-revealjs[== !]
+
+=== Intérêt des outils de génération de la documentation
+* Générer automatiquement la documentation (dans diverses formats) du code source
+* Permet de garder plus facilement la documentation en phase avec le code
+	
+.Outils de documentation par langage
+[%header]
+|===
+| Plusieurs | Rust | Java | Python
+
+| http://www.doxygen.org[Doxygen]
+| https://doc.rust-lang.org/rustdoc/index.html[rustdoc]
+| http://java.sun.com/j2se/javadoc/[JavaDoc]
+| https://docs.python.org/3/library/pydoc.html[pydoc]
+
+|===
+
+ifdef::backend-revealjs[== !]
+
+=== Documenter une API Rust
+* Les commentaires de documentation débutent par `///` et concerne l'élément suivant le commentaire (`//!` pour documenter l'élément englobant)
+* Cette syntaxe est un raccourci pour définir l'attribut `doc` (`#[doc = " This is a doc comment."]`)
+* Ces commentaires supportent une syntaxe https://fr.wikipedia.org/wiki/Markdown[Markdown] pour la mise en forme
+* La documentation au format HTML est ensuite générée avec `cargo doc` (qui invoque https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html[`rustdoc`])
+
+[source,rust,indent=0]
+----
+/// Adds one to the number given.
+///
+/// # Examples
+///
+/// ```
+/// let arg = 5;
+/// let answer = my_crate::add_one(arg);
+///
+/// assert_eq!(6, answer);
+/// ```
+pub fn add_one(x: i32) -> i32 {
+    x + 1
+}
+----
+
+== Audit de code source et Analyse statique
+=== Audit de code source
+* L'_audit_ ou _revue_^icon:wikipedia-w[link="http://en.wikipedia.org/wiki/Software_inspection"]^ de code consiste à étudier attentivement un code source afin de détecter et de corriger des erreurs
+* L'objectif est d'améliorer la qualité du logiciel et l'expérience des développeurs
+* Peut prendre différentes formes
+[horizontal]
+http://en.wikipedia.org/wiki/Fagan_inspection[Fagan inspection]:: est un processus formel pour l'audit de code
+"par dessus l'épaule":: un développeur suit en temps réel ce qu'un autre écrit
+programmation par binôme:: deux développeurs travaillent de concert et échange leur rôle régulièrement (vient de http://en.wikipedia.org/wiki/Extreme_programming[eXtreme Programming] (XP))
+assisté par un outil:: s'appuie sur des outils pour une analyse systématique
+
+ifdef::backend-revealjs[== !]
+
+=== Analyse statique du code
+* Certaines erreurs se reproduisent fréquemment dans un fichier source (`;` après un `for`, …)
+* La plupart de ces erreurs peuvent être recherchées de façon systématique
+* L'_analyse statique_^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Analyse_statique_de_programmes"]^ permet d'obtenir des informations sur un programme sans l'exécuter
+* Elle est un bon complément aux tests
+* En général, elle n'a pas connaissance de ce que le programme doit faire (recherche de motifs généraux)
+* Des outils proposent un moteur ainsi qu'un ensemble de règles permettant de trouver ce type d'erreurs dans un fichier source
+* L'ensemble de règles peut éventuellement être modifiable
+
+.Outils d'analyse statique par langage
+[%header]
+|===
+| Rust | Java | Shell
+
+| https://github.com/rust-lang/rust-clippy[clippy]
+| http://findbugs.sourceforge.net/[FindBugs],
+http://pmd.sourceforge.net[Pmd],
+http://www.sonarqube.org/[SonarQube]
+| https://www.shellcheck.net/[ShellCheck]
+
+|===
+
+ifdef::backend-revealjs[== !]
+
+=== Quelques bogues courants
+* Boucle récursive infinie
++
+[source,java]
+----
+public MaClasse() {
+  MaClasse m = new MaClasse();
+}
+----
+* Déréférencement d'une référence null
++
+[source,java]
+----
+if (c == null && c.uneMethode()) //...
+----
+* Auto affectation d'attribut
++
+[source,java]
+----
+public MaClasse(String uneChaine) {
+  this.chaine = chaine;
+}
+----
+* Valeur de retour ignorée
++
+[source,java]
+----
+String nom = //...
+nom.replace('/', '.');
+----
+
+ifdef::backend-revealjs[== !]
+
+=== Catégories de bogues
+[horizontal]
+Correction:: le code ne fait clairement pas ce qui est attendu
+** _déréférencement d'une référence null_
+Mauvaise pratique:: le code ne respecte pas les bonnes pratiques
+** redéfinition d'_equals_ sans _hashCode_, comparaison de chaîne avec _==_
+Problème de sécurité:: le code est vulnérable à un usage malveillant
+** _injection SQL_
+Code suspect:: le code utilise des pratiques non usuelles
+Performance:: le code est inefficace
+Correction multithread:: il y a un problème de correction en environnement multithread
+
+ifdef::backend-revealjs[== !]
+
+=== Mise en œuvre de l'analyse statique
+* Intégration au processus de développement
+** _intégration à l'IDE, exécution comme les tests unitaires, …_
+* Réglage de l'outil utilisé
+** _éviter les faux positifs, paramétrer le niveau de détail, …_
+* Réfléchir à la prise de décision
+** _consultation des rapports, processus pour la correction du bogue, ne pas corriger le bogue, …_
+
+== Agrégation des rapports
+* La difficulté est de visualiser l'ensemble des rapports produits
+* Il peut être utile d'agréger les différentes mesures pour générer des indicateurs synthétiques
+* Ces indicateurs doivent ensuite être disponibles pour l'ensemble des membres du projet
+* Les réactions face à ces rapports doivent aussi être anticipées

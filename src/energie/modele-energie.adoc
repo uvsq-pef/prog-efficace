@@ -1,0 +1,259 @@
+:imagesdir: figs/
+:stem: latexmath
+
+= Consommation énergétique des ordinateurs
+
+== Puissance et Énergie
+
+- *Énergie*: capacité d'un système à modifier un état en produisant un travail, exprimé en Joules latexmath:[J (N.m)]
+
+- *Puissance*: débit d'énergie (énergie par unitée de temps), exprimé en Watts latexmath:[W (J/s)]
+
+- L'énergie est l'intégrale de la puissance sur le temps,
+
+latexmath:[E = \int P(t).dt]
+
+== Échelle d'énergies
+
+image::echelle-energie.png[Échelle d'énergies, 500]
+
+== Architecture générale d'un ordinateur
+
+image::arch.svg[Architecture d'un ordinateur, 500]
+
+== Zoom sur le CPU (Intel Nehalem)
+
+image::Nehalem_Die_callout.png[Intel Nehalem, 500]
+
+Les cœurs, les caches et la mémoire sont constitués à partir de millions de transistors qui implémentent des portes logiques.
+
+L'architecture Nehalem comporte 731M de transistors et chaque porte fait 35nm.
+
+== Répartition du budget énergie
+
+|===
+|Composant | Puissance [W] | %
+
+|CPU| 80|  31
+|RAM| 36|  14
+|Disques| 12| 5
+|Périphériques| 50| 20
+|Carte mère| 25| 10
+|Ventilateurs| 10| 4
+|Fuites| 38| 15
+|*Total*| *251*| *100*
+|===
+
+_Source: A. Tisserand, ECOFAC 2010_
+
+== Portes MOS
+
+Les circuits logiques récents sont construits à partir de transistors MOS (Metal Oxyde Semiconductor).
+
+Un transistor MOS possède trois broches: la source, le drain et la grille.
+
+Il existe deux types de transistors MOS: le type P et le type N.
+
+Lorsque l'on applique une tension sur la grille, le transistor devient soit passant (type N), soit bloquant (type P).
+
+image::pmos-nmos.svg[PMOS-NMOS, 400]
+
+== Consommation MOS
+
+- Les transistors MOS consomment en permanence lorsqu'ils sont passants.
+
+- Est-il possible de fabriquer des portes qui ne consomment que lors des changements d'état ?
+
+== Porte CMOS
+
+Les portes logiques utilisent la technologie CMOS (Complementary Oxide Semiconductor) qui combine un P-MOS et un N-MOS.
+
+image::CMOS-Inverter.png[Porte NON, 300]
+
+Par exemple, ici on implémente une porte logique NON: latexmath:[Y = \bar{A}].
+
+Lorsque l'entrée vaut 1, la porte NMOS (bas) est passante et la porte PMOS (haut) est bloquante, ainsi Y est relié à la masse (GND).
+
+== Avantage CMOS
+
+Dans une porte CMOS, un des deux transistors est toujours bloquant et il n'y a (presque) pas de courant qui passe entre VDD et GND.
+
+La consommation énergétique se produit donc uniquement lors des transitions d'état.
+
+== Puissance dynamique
+
+image::porte-non.svg[Capacité équivalente, 200]
+
+Lors d'une transition la consommation d'une porte est latexmath:[P_{dyn} = \frac{1}{2}.C.V_{DD}^2.f] où
+
+- latexmath:[C] capacité de charge équivalente
+- latexmath:[V_{DD}] tension
+- latexmath:[f] fréquence des doubles-transitions (montantes + descendantes)
+
+== Amélioration des techniques de fabrication des CMOS
+
+- Dennard observe que à chaque nouvelle génération les transistors peuvent être réduits de ~30% (0.7)
+  * Le voltage diminue de 30% car l'épaisseur diminue
+  * La capacitance diminue de 30% car l'épaisseur diminue
+  * Le temps de propagation diminue de 30% car la distance diminue
+  * La surface diminue de 50% (latexmath:[0.7 \times 0.7])
+
+- Cela entraine:
+  * Une augmentation de la fréquence de 50% (car inverse du temps de propagation)
+  * Une diminution de 50% de la consommation énergétique d'une porte
+  * latexmath:[\Delta P = \Delta C.\Delta V_{DD}^2.\Delta f = 0.7\times 0.7^2 \times \frac{1}{0.7} \approx 0.5]
+
+
+- La dissipation thermique par unité de surface reste constante.
+
+- Mais à chaque génération les CPUs deviennent plus complexes.
+ Moore, 1966: Le nombre de transistors double tous les 1.5 ans à coûts constants.
+
+== Puissance statique
+
+La technologie CMOS est bloquante sauf lors de transitions.
+Mais un faible courant de fuite latexmath:[I_{fuite}] traverse un transistor bloquant.
+
+latexmath:[P_{sta} = V_{DD}.I_{fuite}]
+
+- latexmath:[I_{fuite}] dépends de la température dissipée et du voltage seuil sur les transistors.
+- latexmath:[P_{sta}] augmente exponentiellement (Borkar et Chien, 2011) avec la miniaturisation et met un frein à la loi de Moore. 
+
+== Fin de la loi de Dennard
+
+- Avec l'augmentation des courants de fuite, la dissipation thermique par unité de surface augmente
+
+image:end-of-dennards.png[Fin de la loi de Dennard (S. Gai), 600]
+
+- Avec la miniaturisation, on a aussi une limite sur l'augmentation de fréquence et une limite sur la réduction du voltage de seuil.
+
+== Limites sur la conception des processeurs
+
+latexmath:[P = P_{dyn} + P_{sta} = \frac{1}{2}.C.V_{DD}^2.f + V_{DD}.I_{fuite}]
+
+- Jusqu'aux années 2000, pour augmenter les capacités de calcul les constructeurs ont augmenté la fréquence et le nombre de processeurs. 
+
+- Avec l'augmentation des courants de fuite, la dissipation énergétique devient trop importante.
+
+- Dorénavant pour augmenter les capacités de calcul, on multiplie le nombre de cœurs.
+
+image:clock-rate.png[Évolution de la fréquence nominale, 400]
+
+- Phénomène du _Dark Silicon_: pour limiter la dissipation thermique on n'«allume» pas l'ensemble du CPU en même temps.
+
+_Source: Hennessy-Patterson_
+
+== Comment mesurer l'énergie consommée
+
+*Wattmètre*
+
+- combine un capteur d'intensité et de tension
+- mesure précise mais basse résolution d'échantillonage (peu précis sur des temps petits)
+
+image:yoko.png[Wattmètre Yokogawa WT210, 200]
+
+== Compteur matériel RAPL
+
+- Intel implémente les compteurs RAPL (Running Average Power Limit)
+- Ne mesure pas vraiment la puissance
+- Compte le nombre et le type d'instructions exécutées
+- Utilise un modèle de prédiction de consommation
+- Résolution élevée d'échantillonage
+- Ne mesure pas les composants en dehors du CPU/GPU
+
+== Comparaison RAPL vs. Wattmètre (Haswell)
+
+image:calib-yoko.svg[RAPL vs. Wattmètre, 600]
+
+- 2 compteurs RAPL: pkg (CPU+caches) et ram (mémoire)
+- prédiction corrélée avec la mesure du wattmètre sauf ...
+- ... décalage constant: consommation idle (ventilation, alimentation, carte mère) -- environ 30W
+
+== Techniques pour réduire la consommation
+
+- Meilleure conception technologique (réduire capacitance et courants de fuite)
+- Gate-clocking: extinction sélective des parties inactives du CPU.
+- Sleep-modes (P-state and C-state) & DVFS (Dynamic Voltage Frequency Scaling)
+- Power gating (désactivation d'un cœur complet)
+- Consolidation de charge et extinction de nœuds inactifs dans un cluster
+- Optimisations logicielles
+
+== Sleep-mode & DVFS
+
+- DVFS: change dynamiquement le couple voltage-fréquence du processeur.
+- Sur une architecture Haswell on a une variation quadratique de P.
+
+- Sur Intel: P-state (CPU qui calcule), C-state (Idle et mise en veille d'une partie des composants)
+
+image:DVFS-levels-and-Intel-P-states.png[Intel P-states, 400]
+
+- Un gouverneur système choisit le point de fonctionnement optimal.
+- Par exemple pour un système peu chargé on choisira la fréquence la plus basse.
+
+== Race to Idle
+
+- En raison de courants de fuite importants et de la consommation statique d'autres composants, une très bonne stratégie en pratique est le _Race to Idle_ (ou course jusqu'au repos).
+
+- On fait notre calcul le plus rapidement possible, de manière à pouvoir mettre le système en veille pour limiter la consommations statique.
+
+- Dans ce cas, optimiser l'énergie et le temps de calcul sont liés.
+
+_Racing and Pacing to Idle_, Kim, Ines, Hoffmann, 2005.
+
+== Embarqué vs. Serveur
+
+- Les politiques énergétiques ne vont pas être les mêmes sur des calculateurs embarqués et des serveurs.
+
+- Serveur (très contraint en charge de travail)
+  * On cherche à avoir des fréquences élevées. 
+  * Race to Idle est souvent une bonne stratégie.
+
+- Embarqué (très contraint en énergie)
+  * Souvent on limite la fréquence pour pouvoir baisser VDD et conserver le budget énergie.
+  * On utilise des strategies de limitation de puissance fines. 
+
+== DVFS selon les phases de calcul
+
+image:dvfs-phases.png[DVFS pendant les phases de communication d'un programme parallele, 600]
+
+- Il peut-être intéressant d'appliquer DVFS aux phases de communications d'un programme.
+
+- Si les communications sont synchrones, durant ces phases le CPU travaille peu.
+
+- DVFS sur le processeur permet donc d'économiser de l'énergie sans ralentir le programme.
+
+== Effet rebond
+
+image:koomey.png[Efficacité Énergétique des PC - Koomey 2011, 400]
+
+- Éfficacité énergétique doublée tous les 1.5 ans
+- Puissance de calcul doublée tous les 1.5 ans
+- Nombre de PCs utilisés double tous les trois ans (entre 1980 et 2008).
+
+Optimiser la consommation ne réduit pas l'impact total du calcul. On observe un « effet rebond » où l'efficacité gagnée est utilisée pour calculer plus.
+
+== Simulation numérique: vers un calcul sobre ?
+
+- Compromis entre justesse du modèle et coût énergétique. Exemple: Réseaux de Neuronnes (Resnet), Green AI, Schwartz 2019.
+
+image:resnet.png[FPO (Milliards d'Opérations Flottantes) vs. Justesse, Schwartz Green AI 2019, 300 ]
+
+- Pour une augmentation linéaire du coût en calcul, on a une augmentation logarithmique de la justesse.
+
+- Phénomène similaire observé aussi dans la simulation numérique (Masson & Knutti 2011).
+
+- « Loi » des Retours Décroissants ?
+
+== Bibliographie
+
+- Computer Architecture: A Quantitative Approach, Henessy, Patterson.
+- Introduction to Power Consumption in Dig. Int. Circuits, Tisserand, ECOFAC 2010.
+- Design Challenges of Technology Scaling. Borkar. IEEE. 1999.
+- The future of microprocessors. Borkar et Chien. ACM. 2011.
+- Dennard Scaling and other Power considerations, S. Gai 2020.
+- Benefits in Relaxing the Power Capping Constraint, C. Daniele et al. 2017.
+- Racing and Pacing to Idle: Theoretical and Empirical Analysis of Energy Optimization Heuristics, Kim, Ines, Hoffmann. IEEE 2015.
+- Adaptive, Transparent Frequency and Voltage Scaling of
+Communication Phases in MPI Programs, Lim, Freeh, Lowenthal. ACM/IEEE SC 2006.
+- Green AI, Schwartz et al, 2019.
+- Speed Scale Depdence of Climate Model Performance in the CMPI3 Ensemble, Masson & Knutti, 2011.

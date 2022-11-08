@@ -1,0 +1,449 @@
+:rl: https://doc.rust-lang.org
+:rl-ref: {rl}/reference
+:rl-book: {rl}/book
+:rl-api: {rl}/std
+:rustlings: https://github.com/rust-lang/rustlings/tree/main/exercises
+:rbp: https://practice.rs
+:rbe: https://doc.rust-lang.org/stable/rust-by-example
+
+= Rust RefCard
+
+== Le langage Rust
+=== Historique
+* Conçu et développé initialement par Graydon Hoare (Mozilla Research) en 2010
+* Première version stable en 2015
+
+=== Caractéristiques du langage
+* Langage compilé à typage statique fort
+* Supporte les paradigmes impératif, fonctionnel et concurrent
+* Gestion manuelle de la mémoire (pas de _garbage collector_)
+* Accès mémoire validés statiquement par le compilateur (_borrow checker_)
+* Est accompagné de _cargo_ pour la gestion de la compilation et des bibliothèques
+
+== Quelques domaines d'application
+.Parfois vu comme un possible successeur de C/C++
+* Programmation système
+* Applications en ligne de commande
+* Applications Web (via WebAssembly)
+* Services réseaux
+* Systèmes embarqués.
+
+== Quelques outils de développement
+* Le compilateur {rl}/rustc/index.html[`rustc`] ainsi que l'environnement de développement est préférentiellement installé avec l'outil de distribution https://github.com/rust-lang/rustup[`rustup`]
+* {rl}/cargo/index.html[`cargo`] est le gestionnaire de compilation et de dépendance
+* https://crates.io/[`crates.io`] est le dépôt central des bibliothèques du langage
+* https://github.com/rust-lang/rustfmt[`rustfmt`] formate les fichiers sources
+* {rl}/rustdoc/index.html[`rustdoc`] génère la documentation de l'API d'une application
+* https://github.com/rust-lang/rust-clippy[`clippy`] est un _linter_ pour le code Rust
+
+== « Hello World » en Rust
+.src/intro/exemples/hello.rs
+[source,rust,indent=0]
+----
+include::exemples/hello.rs[]
+----
+<1> Le programme principal est représenté par la fonction `main`
+<2> La macro `println!` affiche un texte sur la sortie standard
+
+== Compilation
+=== Compilateur
+.Le compilateur Rust se nomme {rl}/rustc/index.html[`rustc`]
+[source,bash]
+----
+$ rustc hello.rs
+----
+
+.Quelques options
+[horizontal]
+`-L`:: ajoute un répertoire au chemin de recherche des bibliothèques
+`--edition`:: précise l'{rl}/edition-guide/introduction.html[édition] de Rust à utiliser (2015|2018|2021)
+`--emit`:: spécifie le type de fichiers de sortie à générer
+`-g`:: inclut les informations de débogage
+`-O`:: optimise le code
+`--explain`:: donne des détails sur un message d'erreur
+`--test`:: génère un programme pour exécuter les tests à la place du `main`
+
+ifdef::backend-revealjs[== !]
+
+=== Exécuter le programme
+.Le programme généré est un exécutable natif du système cible
+[source,bash]
+----
+$ ./hello
+----
+
+== Débuter un projet Rust
+.L'initialisation d'un projet Rust s'appuie sur {rl}/cargo/index.html[`cargo`]
+[source,bash]
+----
+$ cargo new hello
+$ tree hello
+hello
+├── Cargo.toml
+└── src
+    └── main.rs
+----
+
+.`cargo` initialise un projet Rust avec
+* un nouveau répertoire du nom du projet,
+* un dépôt `git`,
+* un fichier `Cargo.toml` décrivant le projet,
+* un sous-répertoire pour le code source,
+* un fichier `main.rs` contenant le `main` du _crate_
+
+ifdef::backend-revealjs[== !]
+
+=== Système de build
+.Le système de build intégré avec Rust se nomme {rl}/cargo/index.html[`cargo`]
+[source,bash]
+----
+$ cd src/intro/exemples/hello
+$ cargo build
+   Compiling hello v0.1.0 (src/intro/exemples/hello)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.42s
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/hello`
+Hello, world!
+----
+
+.Quelques commandes et options
+[horizontal]
+`build`:: construit le _crate_ en mode débogage
+`--release`::: optimise le code et génère en mode distribution
+`check`:: vérifie le _crate_ sans générer d'exécutable
+`run`:: exécute le _crate_
+`test`:: compile et exécute les tests
+
+== Notions de base
+* Un code source Rust est une séquence de caractères Unicode UTF-8
+* Une unité de compilation Rust est dénommée un {rl-ref}/crates-and-source-files.html[_crate_] (_caisse_)
+* Un _crate_ contient des {rl-ref}/items/modules.html[_modules_] imbriqués
+* Un fichier source (extension `.rs`) est un module
+* La plupart des instructions se terminent par un `;`
+
+== Commentaires
+* {rl-ref}/comments.html[Commentaires]
+[horizontal]
+`/* ... */`::: le texte entre `/\*` et `*/` est ignoré (peuvent être imbriqués)
+`/** ... */`::: commentaire de documentation (équiv. à l'{rl}/rustdoc/the-doc-attribute.html[attribut doc] `#[doc="..."]`)
+`/*! ... */`::: commentaire de documentation interne (équiv. à l'{rl}/rustdoc/the-doc-attribute.html[attribut doc] `#[doc="..."]`)
+`// ...`::: le texte jusqu'à la fin de la ligne est ignoré
+`/// ...`::: commentaire de documentation (équiv. à l'{rl}/rustdoc/the-doc-attribute.html[attribut doc] `#[doc="..."]`)
+`//! ...`::: commentaire de documentation interne (équiv. à l'{rl}/rustdoc/the-doc-attribute.html[attribut doc] `#[doc="..."]`)
+
+== Système de typage
+* Le {rl-ref}/types.html[type] d'une valeur définit l'interprétation de l'emplacement mémoire la contenant ainsi que les opérations qu'on peut lui appliquer
+* Chaque variable ou expression possède un type
+* Rust est un langage à _typage statique_
+* Le compilateur peut en général inférer le type d'une variable à partir de son contenu
+
+== Types primitifs
+[horizontal]
+{rl-api}/primitive.bool.html[`bool`]:: Booléen (`true` ou `false`)
+{rl-api}/primitive.i8.html[`i8`], {rl-api}/primitive.i16.html[`i16`], {rl-api}/primitive.i32.html[`i32`], {rl-api}/primitive.i64.html[`i64`], {rl-api}/primitive.i128.html[`i128`], {rl-api}/primitive.isize.html[`isize`]:: Entier signé (8, 16, 32, 64, 128 bits ou dépendant de l'architecture)
+{rl-api}/primitive.u8.html[`u8`], {rl-api}/primitive.u16.html[`u16`], {rl-api}/primitive.u32.html[`u32`], {rl-api}/primitive.u64.html[`u64`], {rl-api}/primitive.u128.html[`u128`], {rl-api}/primitive.usize.html[`usize`]:: Entier non signé (8, 16, 32, 64, 128 bits ou dépendant de l'architecture)
+{rl-api}/primitive.f32.html[`f32`], {rl-api}/primitive.f64.html[`f64`]:: Nombre en virgule flottante (simple ou double précision)
+{rl-api}/primitive.char.html[`char`]:: Caractère Unicode (32 bits)
+{rl-api}/primitive.str.html[`str`]:: Chaîne de caractères UTF-8
+{rl-api}/primitive.array.html[`array`]:: Tableau de taille fixe
+{rl-api}/primitive.tuple.html[`tuple`]:: Séquence d'éléments hétérogènes
+
+TIP: Expérimentez ({rustlings}/primitive_types[rustlings], {rbp}/basic-types/numbers.html[Rust By Practice], {rbe}/primitives.html[Rust by Example])
+
+== Littéraux
+* Un {rl-ref}/tokens.html#literals[littéral] représente la valeur d'un type
+* Quelques littéraux
+[horizontal]
+`'C'`:: Caractère Unicode (`b'C'` pour un caractère ASCII)
+`"chaîne"`:: Chaîne de caractères Unicode (`b"chaîne"` pour une chaîne ASCII)
+`12345`:: Entier (`0xFF` en hexa, `0o77` en octal, `0b1111` en binaire)
+`123.0E+77`:: Nombre à virgule flottante
+* Le caractère `_` peut être utilisé pour rendre les nombres plus lisibles
+* Un suffixe de type sur un nombre permet de préciser le type souhaité (`123u64`, `12E+99_f64`)
+
+== Variables
+* Les variables en Rust sont par défaut immuables
+** quand une valeur est attachée à une variable, elle ne peut plus être modifiée
+* Le mot-clé `let` permet de déclarer une variable
++
+[source,rust,indent=0]
+----
+let x = 5;
+----
+* Une variable peut être rendue modifiable avec le mot-clé `mut`
++
+[source,rust,indent=0]
+----
+let mut x = 5;
+----
+* Le nom d'une variable peut être réutilisé ({rl-book}/ch03-01-variables-and-mutability.html#shadowing[_Shadowing_])
++
+[source,rust,indent=0]
+----
+let x = 5;
+let x = x * 2;
+----
+* Chaque variable possède un type qui est inféré la plupart du temps
+* Le type d'une variable peut aussi être précisé
++
+[source,rust,indent=0]
+----
+let x: u32 = 5;
+----
+
+TIP: Expérimentez ({rustlings}/variables[rustlings], {rbp}/variables.html[Rust By Practice], {rbe}/variable_bindings.html[Rust by Example])
+
+== Constantes
+* Une {rl-ref}/items/constant-items.html[constante] est introduite par le mot-clé `const` et doit être annotée par son type
++
+[source,rust,indent=0]
+----
+const MAX_POINTS: u32 = 100_000;
+----
+* Une constante peut être déclarée dans n'importe quelle portée et doit être initialisée par une expression constante
+
+TIP: Expérimentez ({rbe}/custom_types/constants.html[Rust by Example])
+
+== Référence
+* En Rust, toute valeur _appartient_ à une variable ({rl-book}/ch04-00-understanding-ownership.html[_ownership_])
+** à un instant donné, il ne peut y avoir qu'un unique propriétaire
+** quand le propriétaire sort de sa portée, la valeur est détruite
+* Il est possible d'_emprunter_ (_borrow_) la valeur d'une variable avec une référence (`&`)
+** la propriété n'est alors pas transférée
+** pour pouvoir modifier une valeur par l'intermédiaire d'une référence, il faut que cette dernière soit modifiable (`&mut`)
+** quand il existe une référence mutable pour une valeur, aucune autre référence ne peut pointer sur la valeur
+* Pour déréférencer une référence, on utilise l'opérateur `*`
+** la plupart du temps, le déréférencement se fait implicitement
+
+[TIP]
+====
+* Voir l'exemple sur les chaînes de caractères
+* Expérimentez ({rbp}/ownership/borrowing.html[Rust By Practice])
+====
+
+== Slice
+* Un {rl-book}/ch04-03-slices.html[_slice_] (`[T]`) est un type primitif permettant de référencer une portion d'une séquence contiguëe d'éléments
+** c'est une vue sur un bloc de mémoire représentée par un pointeur et une taille
+** cf. le type primitif {rl-api}/primitive.slice.html[slice]
+** cf. le module {rl-api}/slice/index.html[`std::slice`]
+* Un slice est une sorte de référence (donc n'est pas propriétaire)
+* Un slice peut être immuable (`&[T]`) ou modifiable (`&mut [T]`)
+
+[TIP]
+====
+* Voir l'exemple sur les chaînes de caractères
+* Expérimentez ({rbp}/compound-types/slice.html[Rust By Practice], {rbe}/primitives/array.html[Rust by Example])
+====
+
+== _Smart pointers_
+.En plus des références, la bibliothèque standard propose différents types de _smart pointers_^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Smart_pointer"]^
+[horizontal]
+{rl}/std/boxed/index.html[`Box<T>`]::: pour allouer des valeurs sur le tas
+{rl}/std/rc/index.html[`Rc<T>`]::: un type de comptage de références pour gérer les propriétaires multiples
+{rl}/std/cell/index.html[`Ref<T>`, `RefMut<T>`]::: accédé par `RefCell<T>`, un type pour gérer les emprunts lors de l'exécution au lieu de la compilation
+
+TIP: Expérimentez ({rbe}/std/box.html[Rust by Example])
+
+== Chaînes de caractères
+=== Type primitif {rl}/1.54.0/std/primitive.str.html[`str`]
+* Le type primitif {rl}/1.54.0/std/primitive.str.html[`str`] est un slice de type `[u8]` (séquence d'octet)
+** la plupart des fonctions suppose qu'une valeur de type `str` contient une chaîne UTF-8
+* Généralement manipulé sous la forme empruntée `&str`
+* Un littéral est de type `&'static str`
+* Le module {rl}/std/str/index.html[std::str] permet la manipulation des variables de ce type
+* Quelques opérations :
+{rl}/std/primitive.str.html#method.chars[`chars`],
+{rl}/std/primitive.str.html#method.contains[`contains`],
+{rl}/std/primitive.str.html#method.find[`find`],
+{rl}/std/primitive.str.html#method.get[`get`]
+{rl}/std/primitive.str.html#method.is_empty[`is_empty`],
+{rl}/std/primitive.str.html#method.len[`len`],
+{rl}/std/primitive.str.html#method.replace[`replace`],
+{rl}/std/primitive.str.html#method.split[`split`],
+{rl}/std/primitive.str.html#method.trim[`trim`]
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple
+.src/intro/exemples/strings.rs
+[source,rust,indent=0]
+----
+include::exemples/strings.rs[tag=str]
+----
+<1> `hello` est de type `&'static str`
+<2> Extraction d'un sous-slice
+<3> La macro `println!` formate et affiche une chaîne sur la sortie standard
+
+ifdef::backend-revealjs[== !]
+
+=== Type {rl}/std/string/struct.String.html[std::string::String]
+* Le type {rl}/std/string/struct.String.html[std::string::String] est le type chaîne de caractères proposé par la bibliothèque standard
+* Une instance de ce type possède la propriété du contenu de la chaîne
+* Quelques opérations :
+{rl}/std/string/struct.String.html#method.new[`new`],
+{rl}/std/string/struct.String.html#method.with_capacity[`with_capacity`],
+{rl}/std/string/struct.String.html#impl-From%3C%26str%3E[`from`],
+{rl}/std/string/struct.String.html#method.capacity[`capacity`],
+{rl}/std/string/struct.String.html#method.clear[`clear`],
+{rl}/std/string/struct.String.html#method.insert[`insert`],
+{rl}/std/string/struct.String.html#method.is_empty[`is_empty`],
+{rl}/std/string/struct.String.html#method.len[`len`],
+{rl}/std/string/struct.String.html#method.push_str[`push_str`],
+{rl}/std/string/struct.String.html#impl-Add%3C%26str%3E[`+`] (concaténation),
+{rl}/std/macro.format.html[`format!`]
+
+ifdef::backend-revealjs[== !]
+
+=== Exemple
+.src/intro/exemples/strings.rs
+[source,rust,indent=0]
+----
+include::exemples/strings.rs[tag=string]
+----
+<1> `hello` et `world` sont de type `String`
+<2> Concatène les deux variables (`hello` est déplacé, `world` est emprunté)
+
+TIP: Expérimentez ({rustlings}/strings[rustlings], {rbp}/compound-types/string.html[Rust By Practice], {rbe}/std/str.html[Rust by Example])
+
+== Structures de contrôle
+=== Conditionnelle
+==== Expression {rl}/reference/expressions/if-expr.html[`if`]
+.src/intro/exemples/control.rs
+[source,rust,indent=0]
+----
+include::exemples/control.rs[tag=if]
+----
+<1> `if` est une expression
+<2> `if` peut être utilisée comme une instruction
+
+ifdef::backend-revealjs[== !]
+
+==== Expression {rl}/reference/expressions/match-expr.html[`match`]
+.src/intro/exemples/control.rs
+[source,rust,indent=0]
+----
+include::exemples/control.rs[tag=match]
+----
+<1> {rl}/reference/expressions/range-expr.html[Intervalle] [-20, -1]
+<2> La valeur 0
+<3> Toutes les autres valeurs
+
+ifdef::backend-revealjs[== !]
+
+=== Boucles
+==== Expression {rl}/reference/expressions/loop-expr.html#infinite-loops[`loop`]
+.src/intro/exemples/control.rs
+[source,rust,indent=0]
+----
+include::exemples/control.rs[tag=loop]
+----
+<1> la boucle se poursuit tant que le mot-clé `break` n'est pas utilisé
+<2> une expression `loop` terminée par `break` accepte une valeur de retour
+
+ifdef::backend-revealjs[== !]
+
+==== Expression {rl}/reference/expressions/loop-expr.html#predicate-loops[`while`]
+.src/intro/exemples/control.rs
+[source,rust,indent=0]
+----
+include::exemples/control.rs[tag=while]
+----
+<1> la boucle se poursuit tant que la condition est vraie
+
+ifdef::backend-revealjs[== !]
+
+==== Expression {rl}/reference/expressions/loop-expr.html#iterator-loops[`for`]
+.src/intro/exemples/control.rs
+[source,rust,indent=0]
+----
+include::exemples/control.rs[tag=for]
+----
+<1> `for` permet d'itérer sur les éléments d'une collection
+<2> en utilisant le type {rl}/std/ops/struct.Range.html[`Range`], on peut manipuler des indices
+
+TIP: Expérimentez ({rustlings}/if[rustlings], {rbp}/flow-control.html[Rust By Practice], {rbe}/flow_control.html[Rust by Example])
+
+== Fonction
+* La définition d'une {rl-book}/ch03-03-how-functions-work.html[fonction] est introduite par le mot-clé `fn`
+* Par convention, le nom de la fonction est écrit en _snake case_^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Snake_case"]^
+* Les paramètres sont entre parenthèses et leurs types doivent être précisés
+* Le corps de la fonction est entre accolades `{ }`
++
+.src/intro/exemples/function.rs
+[source,rust,indent=0]
+----
+include::exemples/function.rs[tag=another_function]
+----
+* Une fonction retourne la valeur de la dernière expression ou l'argument de `return`
++
+[source,rust,indent=0]
+----
+include::exemples/function.rs[tag=five]
+----
+<1> l'annotation de type après `->` précise le type de retour
++
+WARNING: pour pouvoir être retournée, la dernière ligne d'une fonction *doit être une expression* (pas de `;`). Une instruction (terminée par un `;`) provoquerait une erreur de compilation.
+
+TIP: Expérimentez ({rustlings}/functions[rustlings], {rbp}/basic-types/functions.html[Rust By Practice], {rbe}/fn.html[Rust by Example])
+
+== Système de modules
+* Rust supporte différents moyens pour organiser un projet
++
+[horizontal]
+Package:: permet de construire, tester et partager des crates avec Cargo
+Crate:: est un arbre de modules produisant une bibliothèque ou un exécutable
+Module:: permet de contrôler l'organisation, l'encapsulation et la portée des _paths_ (avec `use`)
+Path:: est un moyen de nommer un item (fonction, module, …)
+* Le mot-clé `use` importe un _path_ dans la portée courante
++
+[source,rust,indent=0]
+----
+use std::fmt::Result;
+use std::io::Result as IoResult;
+----
+
+TIP: Expérimentez ({rustlings}/modules[rustlings], {rbp}/crate-module/intro.html[Rust By Practice], {rbe}/mod.html[Rust by Example])
+
+== Bibliothèques
+* Rust est distribué avec une riche {rl}/std/index.html[bibliothèque standard]
+** accessible par le _path_ `std`
+** le module {rl}/std/prelude/index.html[`std::prelude`] est automatiquement importé dans chaque programme
+** contient entre autre des types importants comme {rl}/std/vec/struct.Vec.html[`Vec<T>`] et {rl}/std/option/enum.Option.html[`Option<T>`], des {rl}/std/index.html#primitives[opérations] sur les types primitifs, des {rl}/std/index.html#macros[macros] et des abstractions pour les {rl}/std/io/index.html[I/O] et le {rl}/std/thread/index.html[multithreading]
+* Bibliothèques externes avec Cargo et https://crates.io/[crates.io]
+
+== Quelques types et modules importants
+[horizontal]
+{rl}/std/ops/struct.Range.html[`Range`]:: représente un intervalle (littéral `start..end`) ({rbe}/flow_control/for.html[Rust by Example])
+{rl}/std/primitive.tuple.html[`Tuple`]:: une séquence finie et hétérogène d'éléments (littéral `("hello", 5, 'c')`) ({rbp}/compound-types/tuple.html[Rust By Practice], {rbe}/primitives/tuples.html[Rust by Example])
+{rl}/1.54.0/std/primitive.array.html[`Tableau`]:: un tableau de taille fixe d'éléments de même type (littéral `[x, y, z]` ou `[x; N]`) ({rbp}/compound-types/array.html[Rust By Practice], {rbe}/primitives/array.html[Rust by Example])
+{rl}/std/vec/struct.Vec.html[`Vec<T>`]:: un tableau de taille variable ({rustlings}/vecs[rustlings], {rbp}/collections/vector.html[Rust By Practice], {rbe}/std/vec.html[Rust by Example])
+{rl}/std/result/index.html[`Result<T, E>`]:: pour retourner et propager une erreur ({rbp}/result-panic/result.html[Rust By Practice], {rbe}/std/result.html[Rust by Example])
+{rl}/std/option/index.html[`Option<T>`]:: pour représenter une valeur optionnel ({rustlings}/options[rustlings], {rbe}/std/option.html[Rust by Example])
+{rl}/std/collections/index.html[std::collections]:: manipulation de collections
+{rl}/std/fmt/index.html[std::fmt]:: formatage de chaînes de caractères ({rbp}/formatted-output/formatting.html[Rust By Practice], {rbe}/hello/print.html[Rust by Example])
+{rl}/std/io/index.html[std::io]:: gestion des I/O ({rbe}/std_misc/file.html[Rust by Example])
+
+== Références
+=== Documentation officielle
+* https://www.rust-lang.org/fr/[Site officiel]
+* {rl-book}/[The Rust Programming Language], _Steve Klabnik and Carol Nichols_
+* {rl}/std/index.html[Documentation] de la bibliothèque standard
+* {rl}/reference/index.html[Référence] du langage
+
+ifdef::backend-revealjs[== !]
+
+=== Autres documents
+* https://stevedonovan.github.io/rust-gentle-intro/[A Gentle Introduction To Rust], _Steve Donovan_
+* https://blog.guillaume-gomez.fr/Rust/[Tutoriel Rust], _Guillaume Gomez_
+* https://cheats.rs/[Rust Language Cheat Sheet], _Ralf Biedert_
+* https://serokell.io/blog/learn-rust[17 Resources to Help You Learn Rust in 2022], _Gints Dreimanis_, 2022
+
+ifdef::backend-revealjs[== !]
+
+=== Apprendre en codant
+** https://play.rust-lang.org/[Playground] (coder dans le navigateur)
+** https://github.com/rust-lang/rustlings/[rustlings] (ensemble d'exercices pour apprendre le langage)
+** {rl}/stable/rust-by-example/[Rust by Example] (exemples exécutables dans le navigateur)
+** {rbp}/why-exercise.html[Rust by practice]
+** https://rust-unofficial.github.io/too-many-lists/[Learn Rust With Entirely Too Many Linked Lists]

@@ -1,0 +1,21 @@
+= Programmation efficace
+include::meta.adoc[]
+:doctype: book
+:toc: left
+:toc-title: Sommaire
+:sectanchors:
+:sectlinks:
+:sectnums:
+:masterdoc: // les sections sont intégrées dans un document maître
+include::attributes.adoc[]
+
+:leveloffset: +1
+
+include::intro/intro.adoc[]
+include::devtools/devtools.adoc[]
+include::rust/rust.adoc[]
+include::modeles-memoire/modeles-memoire.adoc[]
+include::energie/energie.adoc[]
+//include::conc/conc.adoc[]
+
+:leveloffset: -1

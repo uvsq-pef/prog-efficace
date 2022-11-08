@@ -1,0 +1,8 @@
+:stem:
+:icons: font
+:imagesdir: figs
+:source-highlighter: highlightjs
+:revealjsdir: reveal.js
+:revealjs_theme: beige
+:customcss: css/custom.css
+:revealjs_slideNumber: true

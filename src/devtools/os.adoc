@@ -1,0 +1,67 @@
+= Au niveau du système d'exploitation
+== Introduction
+* De nombreux outils généralistes peuvent être d'une grande aide pour le développeur
+* Certains sont directement intégrés à l'OS
+* D'autres peuvent y être avantageusement ajoutés
+
+== Shells
+* Le _Shell_^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Interface_syst%C3%A8me"]^ (ou _interpréteur de commandes_^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Interpr%C3%A9teur_de_commandes"]^) est l'interface en ligne de commande^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Interface_en_ligne_de_commande"]^ (_Command Line Interface_ ou _CLI_) permettant d'interagir avec le système d'exploitation
+* C'est un outil important que doit maîtriser un développeur
+* À l'aide du langage de script qu'il intègre, le shell fournit un puissant moyen pour l'automatisation de tâches récurrentes
+* Il peut être largement personnalisé et adapté grâce aux fichiers d'initialisation (_dot files_ sous Unix)
+
+.Quelques shells
+[horizontal]
+Unix/Linux/Mac OS:: http://www.gnu.org/software/bash/[bash] ^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Bourne-Again_shell"]^, https://www.zsh.or/[zsh] ^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Z_Shell"]^
+Windows:: https://docs.microsoft.com/en-us/powershell/[PowerShell] ^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Windows_PowerShell"]^, cmd^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Cmd"]^
+
+ifdef::masterdoc[]
+[NOTE]
+====
+[horizontal]
+Shell:: https://github.com/alebcay/awesome-shell[Awesome Shell]
+bash:: https://opensource.com/article/19/12/bash-resources[10 resources to become a better Bash user],
+https://github.com/awesome-lists/awesome-bash[Awesome Bash],
+https://tldp.org/LDP/Bash-Beginners-Guide/html/index.html[Bash Guide for Beginners],
+https://tldp.org/LDP/abs/html/[Advanced Bash-Scripting Guide]
+zsh:: https://ohmyz.sh/[Oh My Zsh],
+https://github.com/unixorn/awesome-zsh-plugins[awesome-zsh-plugins]
+Dotfiles:: https://medium.com/@webprolific/getting-started-with-dotfiles-43c3602fd789[Getting Started With Dotfiles],
+https://github.com/webpro/awesome-dotfiles[Awesome dotfiles],
+https://dotfiles.github.io/[Unofficial guide to dotfiles on GitHub],
+https://wiki.archlinux.org/index.php/Dotfiles[Dotfiles] (ArchWiki)
+====
+endif::masterdoc[]
+
+== Outils en ligne de commande
+=== Manipulation de fichiers
+* https://the.exa.website/[exa] / ls^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Ls"]^ / tree^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Tree_(command)"]^
+* bat^icon:github[link="https://github.com/sharkdp/bat"]^ / cat^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Cat_(Unix)"]^
+* fzf^icon:github[link="https://github.com/junegunn/fzf"]^
+* fd^icon:github[link="https://github.com/sharkdp/fd"]^ / https://www.gnu.org/software/findutils/[find]
+* rg^icon:github[link="https://github.com/BurntSushi/ripgrep"]^ / skim^icon:github[link="https://github.com/lotabout/skim"]^ / https://www.gnu.org/software/grep/[grep]
+* dust^icon:github[link="https://github.com/bootandy/dust"]^ / https://dev.yorhel.nl/ncdu[ncdu] / du^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Du_(Unix)"]^
+* duf^icon:github[link="https://github.com/muesli/duf"]^ / df^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Df_(Unix)"]^
+* sd^icon:github[link="https://github.com/chmln/sd"]^ / sed^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Stream_Editor"]^ / awk^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Awk"]^
+* tokei^icon:github[link="https://github.com/XAMPPRocky/tokei"]^
+
+ifdef::backend-revealjs[== !]
+
+=== Gestion de processus/mémoire
+* hyperfine^icon:github[link="https://github.com/sharkdp/hyperfine"]^ / time^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Time_(Unix)"]^
+* procs^icon:github[link="https://github.com/dalance/procs"]^ / ps^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Ps_(Unix)"]^
+* https://htop.dev/[htop] / bottom^icon:github[link="https://github.com/ClementTsang/bottom"]^ / top^icon:wikipedia-w[link="https://en.wikipedia.org/wiki/Top_(software)"]^ / free^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Free_(Unix)"]^
+
+ifdef::backend-revealjs[== !]
+
+=== Outils réseaux
+* ssh^icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Secure_Shell"]^
+* tmux^icon:github[link="https://github.com/tmux/tmux/wiki"]^ / tmuxinator^icon:github[link="https://github.com/tmuxinator/tmuxinator"]^ / Oh my tmux!^icon:github[link="https://github.com/gpakosz/.tmux"]^ / https://www.byobu.org/[byobu] / https://www.gnu.org/software/screen/[screen]
+
+== Références
+* https://zaiste.net/posts/shell-commands-rust/[Rewritten in Rust: Modern Alternatives of Command-Line Tools]
+* https://www.wezm.net/technical/2019/10/useful-command-line-tools/[An Illustrated Guide to Some Useful Command Line Tools]
+* https://bios-blog.com/handy-shell-tools/[Handy Shell Tools]
+* https://ivergara.github.io/Supercharging-shell.html[Supercharging the shell]
+* https://missing.csail.mit.edu/2020/shell-tools/[Shell Tools and Scripting]
+* https://adamdrake.com/command-line-tools-can-be-235x-faster-than-your-hadoop-cluster.html[Command-line Tools can be 235x Faster than your Hadoop Cluster]
