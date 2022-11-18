@@ -26,6 +26,9 @@ $ bundle install
 ### Construction du cours (à la main)
 ```
 $ # Construction du support de cours
+$ for chapter in "intro" "devtools" "rust" "modeles-memoire" "energie"; do
+    cp src/"$chapter"/figs/*.svg src/"$chapter"/figs/*.png html/figs/
+  done
 $ bundle exec asciidoctor -r asciidoctor-diagram -D html/ src/index.adoc
 $ # Construction des slides
 $ wget -qO- https://github.com/hakimel/reveal.js/archive/refs/tags/3.9.2.tar.gz | \
@@ -33,17 +36,6 @@ $ wget -qO- https://github.com/hakimel/reveal.js/archive/refs/tags/3.9.2.tar.gz 
 $ mkdir -p html/css && cp src/custom.css html/css
 $ for chapter in "intro" "devtools" "rust" "modeles-memoire" "energie"; do
     bundle exec asciidoctor-revealjs -r asciidoctor-diagram -D html/ src/"$chapter"/"$chapter".adoc
-  done
-```
-
-### Construction du cours (à la main)
-```
-$ asciidoctor -r asciidoctor-diagram -D html/ src/index.adoc
-$ wget -qO- https://github.com/hakimel/reveal.js/archive/refs/tags/3.9.2.tar.gz | \
-        tar --transform 's/^reveal.js-3.9.2/reveal.js/' -xz -C html
-$ mkdir -p html/css && cp src/custom.css html/css
-$ for chapter in "preambule" "intro" "conc"; do
-    asciidoctor-revealjs -r asciidoctor-diagram -D html/ src/"$chapter"/"$chapter".adoc
   done
 ```
 
