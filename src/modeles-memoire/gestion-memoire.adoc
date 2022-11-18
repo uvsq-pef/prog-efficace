@@ -14,12 +14,13 @@ image::virtmem.svg[Mémoire virtuelle,303,480,role=right]
 .Références
 * Article icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/M%C3%A9moire_virtuelle"] sur la mémoire virtuelle
 * Chapitre sur la https://fr.wikibooks.org/wiki/Fonctionnement_d%27un_ordinateur/La_m%C3%A9moire_virtuelle[mémoire virtuelle] du cours https://fr.wikibooks.org/wiki/Fonctionnement_d%27un_ordinateur[Fonctionnement d'un ordinateur]
+* Présentation https://youtu.be/nXYXLuqsllY[Le processus de boot], Samuel Ortiz, Devoxx FR, 2021
 
 == Mémoire d'un processus
 .Mémoire d'un processus (source icon:wikipedia-w[link="https://commons.wikimedia.org/wiki/File:Typical_computer_data_memory_arrangement.png"])
 image::memlayout.png[Mémoire d'un processus,201,597,role=right]
 * L'OS et le matériel travaillent de concert pour que chaque processus ait l'impression
-** de disposer d'une vaste zone de mémoire contiguë
+** de disposer d'une vaste zone de mémoire contigüe
 ** d'être seul à s'exécuter
 * La zone du programme comprend
 ** le segment _text_ qui contient le code du programme
@@ -176,7 +177,7 @@ ifdef::backend-revealjs[== !]
 * Article icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Ramasse-miettes_(informatique)"] sur le ramasse-miette
 * https://blogs.oracle.com/javamagazine/understanding-garbage-collectors[Understanding Garbage Collectors], _Christine H. Flood_, Java Magazine
 * https://blogs.oracle.com/javamagazine/understanding-the-jdks-new-superfast-garbage-collectors[Understanding the JDK’s New Superfast Garbage Collectors], _Raoul-Gabriel Urma_ & _Richard Warburton_, Java Magazine
-* https://blogs.oracle.com/javamagazine/epsilon-the-jdks-do-nothing-garbage-collector
+* https://blogs.oracle.com/javamagazine/epsilon-the-jdks-do-nothing-garbage-collector[Epsilon: The JDK’s Do-Nothing Garbage Collector], _Andrew Binstock_, Java Magazine
 
 == Pointeurs en Rust
 * Le type de pointeur le plus simple en Rust est la référence (symbole `&`)
