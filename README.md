@@ -1,5 +1,7 @@
 # Programmation efficace
 
+![Build status](https://github.com/uvsq-pef/prog-efficace/actions/workflows/deploy.yml/badge.svg)
+
 ## Introduction
 Ce cours s'inscrit dans le cursus de licence informatique de l'[UVSQ](https://www.uvsq.fr/) en 3ème année au semestre 5.
 Il a plusieurs objectifs :
