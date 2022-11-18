@@ -14,6 +14,7 @@ GEM
       concurrent-ruby (~> 1.0)
       thread_safe (~> 0.3.5)
     concurrent-ruby (1.1.10)
+    rake (13.0.6)
     rexml (3.2.5)
     thread_safe (0.3.6)
 
@@ -24,6 +25,7 @@ DEPENDENCIES
   asciidoctor (>= 2.0)
   asciidoctor-diagram (>= 2.2)
   asciidoctor-revealjs (>= 4.1)
+  rake (>= 13.0)
 
 BUNDLED WITH
    2.3.15

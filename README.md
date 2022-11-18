@@ -41,7 +41,7 @@ $ for chapter in "intro" "devtools" "rust" "modeles-memoire" "energie"; do
 
 ### Construction du cours (avec rake)
 ```
-$ rake
+$ bundle exec rake
 ```
 
 ## Exercices
