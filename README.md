@@ -14,16 +14,44 @@ Le langage choisi pour ce cours est le langage [Rust](https://www.rust-lang.org/
 Pour construire le cours, les outils suivants doivent être installés sur le système.
 * [`bundler`](https://bundler.io/)
 * [`graphviz`](https://graphviz.org/) (pour les diagrammes)
+* [`rake`](https://ruby.github.io/rake/)
+
+Remarque : la version 4.1 d'asciidoctor-revealjs ne semble pas compatible avec la version 4 de revealjs d'où l'usage de la version 3.9.
 
 ### Installation des dépendances (gems)
 ```
 $ bundle install
 ```
 
-### Construction du cours
+### Construction du cours (à la main)
 ```
+$ # Construction du support de cours
 $ bundle exec asciidoctor -r asciidoctor-diagram -D html/ src/index.adoc
+$ # Construction des slides
+$ wget -qO- https://github.com/hakimel/reveal.js/archive/refs/tags/3.9.2.tar.gz | \
+        tar --transform 's/^reveal.js-3.9.2/reveal.js/' -xz -C html
+$ mkdir -p html/css && cp src/custom.css html/css
+$ for chapter in "intro" "devtools" "rust" "modeles-memoire" "energie"; do
+    bundle exec asciidoctor-revealjs -r asciidoctor-diagram -D html/ src/"$chapter"/"$chapter".adoc
+  done
 ```
+
+### Construction du cours (à la main)
+```
+$ asciidoctor -r asciidoctor-diagram -D html/ src/index.adoc
+$ wget -qO- https://github.com/hakimel/reveal.js/archive/refs/tags/3.9.2.tar.gz | \
+        tar --transform 's/^reveal.js-3.9.2/reveal.js/' -xz -C html
+$ mkdir -p html/css && cp src/custom.css html/css
+$ for chapter in "preambule" "intro" "conc"; do
+    asciidoctor-revealjs -r asciidoctor-diagram -D html/ src/"$chapter"/"$chapter".adoc
+  done
+```
+
+### Construction du cours (avec rake)
+```
+$ rake
+```
+
 ## Exercices
 1. [Devine mon nombre !](https://github.com/uvsq-pef/td_devine_mon_nombre)
 1. [Exercices choisis](https://github.com/uvsq-pef/td_exercices_choisis)
