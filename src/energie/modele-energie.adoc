@@ -1,7 +1,6 @@
+= Consommation énergétique des ordinateurs
 :imagesdir: figs/
 :stem: latexmath
-
-= Consommation énergétique des ordinateurs
 
 == Puissance et Énergie
 
@@ -194,7 +193,7 @@ image:DVFS-levels-and-Intel-P-states.png[Intel P-states, 400]
 
 - En raison de courants de fuite importants et de la consommation statique d'autres composants, une très bonne stratégie en pratique est le _Race to Idle_ (ou course jusqu'au repos).
 
-- On fait notre calcul le plus rapidement possible, de manière à pouvoir mettre le système en veille pour limiter la consommations statique.
+- On fait notre calcul le plus rapidement possible, de manière à pouvoir mettre le système en veille pour limiter la consommation statique.
 
 - Dans ce cas, optimiser l'énergie et le temps de calcul sont liés.
 
@@ -210,7 +209,7 @@ _Racing and Pacing to Idle_, Kim, Ines, Hoffmann, 2005.
 
 - Embarqué (très contraint en énergie)
   * Souvent on limite la fréquence pour pouvoir baisser VDD et conserver le budget énergie.
-  * On utilise des strategies de limitation de puissance fines. 
+  * On utilise des stratégies de limitation de puissance fines. 
 
 == DVFS selon les phases de calcul
 
@@ -226,7 +225,7 @@ image:dvfs-phases.png[DVFS pendant les phases de communication d'un programme pa
 
 image:koomey.png[Efficacité Énergétique des PC - Koomey 2011, 400]
 
-- Éfficacité énergétique doublée tous les 1.5 ans
+- Efficacité énergétique doublée tous les 1.5 ans
 - Puissance de calcul doublée tous les 1.5 ans
 - Nombre de PCs utilisés double tous les trois ans (entre 1980 et 2008).
 

@@ -1,12 +1,9 @@
+= Optimisations de code 
 :imagesdir: figs/
 :stem: latexmath
 :revealjs_customtheme: reveal.js/css/theme/beige.css
 :customcss: custom.css
 :revealjs_slideNumber: true
-
-
-
-= Optimisations de code 
 
 == Mesure de performance
 
@@ -99,7 +96,7 @@ test tests::bench_add_two ... bench:         1 ns/iter (+/- 0)
 
 - Sous Linux, l'outil https://perf.wiki.kernel.org/index.php/Tutorial[perf] permet d'interroger directement le noyau pour accéder à ces compteurs.
 
-- Example: pour mesurer les cycles, le nombre d'instructions, ainsi que les cache misses:
+- Exemple: pour mesurer les cycles, le nombre d'instructions, ainsi que les cache misses:
 
 [source,bash]
 ----
@@ -303,7 +300,7 @@ Les architectures récentes sont multicœurs, pour en tirer parti les programmes
 
 - Décomposer le travail en parties indépendantes. Chaque partie sera effectuée par un _thread_ dans un cœur différent.
 
-- Limiter au maximum les communication et synchronisations entre threads (coûteuses).
+- Limiter au maximum les communications et synchronisations entre threads (coûteuses).
 
 == Exemple de parallélisation en rust
 
