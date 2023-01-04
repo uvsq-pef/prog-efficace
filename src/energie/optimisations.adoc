@@ -38,11 +38,11 @@ image::performance2.png[Mesure de performance, 500]
 image::dispersion.png[Bruit de mesure, 500]
 
 - Pas de différence significative avec 30 mesures
-- Répéter les mesures et étudier leur dispersion. 
+- Répéter les mesures et étudier leur dispersion.
 
 == Bruit de mesure
 
-- Importance de prendre en compte le bruit de mesure. 
+- Importance de prendre en compte le bruit de mesure.
 - Sources d'indéterminisme:
     * Hiérarchie mémoire: Caches, TLB, Buffers E/S, Disque dur, swap
     * Pipeline d'instructions
@@ -52,7 +52,7 @@ image::dispersion.png[Bruit de mesure, 500]
 == Pour stabiliser les mesures
 
 - Exécutez une première fois votre programme pour charger les données dans le buffer E/S (sauf si vous souhaitez en mesurer l'effet).
-- Utiliser _pinning_ de processus (évite que les threads soient migrés en cours d'exécution).
+- Utiliser le _pinning_ de processus (évite que les threads soient migrés en cours d'exécution).
 - Désactivez le DVFS de votre processeur (gouverneur performance)
 - Évitez de faire tourner d'autres processus et augmentez la priorité du processus mesuré avec `nice -20`
 
@@ -112,7 +112,7 @@ Trois niveaux de cache (architectures serveur)
 
 - L3 (partagé)
 - L2 (par cœur)
-- L1 données et instruction 
+- L1 données et instruction
 
 == Latences (Nehalem)
 
@@ -147,7 +147,7 @@ for i in 0..n {
 
 image:prefetch.png[Prefetcher, 200]
 
-== Politique de remplacement 
+== Politique de remplacement
 
 - LRU (Last Recently Used)
 - Les données les plus anciennement utilisées sont remplacées en premier.
@@ -222,12 +222,12 @@ image:loop-invariant-cm.png[Loop invariant code motion]
 [source,rust]
 ----
 for i in 1..n {
-	a[i] = a[i] + 1 ;
-	if i<3 { 
-		b[i] = a[i]*c[i];
-    } else {
-		b[i] = a[i-1]*b[i-1];
-    }
+  a[i] = a[i] + 1 ;
+  if i<3 {
+    b[i] = a[i]*c[i];
+  } else {
+    b[i] = a[i-1]*b[i-1];
+  }
 }
 ----
 

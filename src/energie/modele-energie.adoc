@@ -6,7 +6,7 @@
 
 - *Énergie*: capacité d'un système à modifier un état en produisant un travail, exprimé en Joules latexmath:[J (N.m)]
 
-- *Puissance*: débit d'énergie (énergie par unitée de temps), exprimé en Watts latexmath:[W (J/s)]
+- *Puissance*: débit d'énergie (énergie par unité de temps), exprimé en Watts latexmath:[W (J/s)]
 
 - L'énergie est l'intégrale de la puissance sur le temps,
 
@@ -225,11 +225,17 @@ image:dvfs-phases.png[DVFS pendant les phases de communication d'un programme pa
 
 image:koomey.png[Efficacité Énergétique des PC - Koomey 2011, 400]
 
-- Efficacité énergétique doublée tous les 1.5 ans
+- Éfficacité énergétique doublée tous les 1.5 ans
 - Puissance de calcul doublée tous les 1.5 ans
 - Nombre de PCs utilisés double tous les trois ans (entre 1980 et 2008).
 
 Optimiser la consommation ne réduit pas l'impact total du calcul. On observe un « effet rebond » où l'efficacité gagnée est utilisée pour calculer plus.
+
+==  Effet rebond
+
+image:top500.png[Évolution des 100 premières machines HPC - Koomey 2011, 400]
+
+- Malgré d'importantes améliorations de l'efficacité, l'empreinte énergétique totale augmente avec la demande en calcul.
 
 == Simulation numérique: vers un calcul sobre ?
 
