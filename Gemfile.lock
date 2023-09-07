@@ -9,14 +9,10 @@ GEM
       rexml
     asciidoctor-diagram-ditaamini (1.0.3)
     asciidoctor-diagram-plantuml (1.2022.5)
-    asciidoctor-revealjs (4.1.0)
+    asciidoctor-revealjs (5.0.1)
       asciidoctor (>= 2.0.0, < 3.0.0)
-      concurrent-ruby (~> 1.0)
-      thread_safe (~> 0.3.5)
-    concurrent-ruby (1.1.10)
     rake (13.0.6)
     rexml (3.2.5)
-    thread_safe (0.3.6)
 
 PLATFORMS
   x86_64-linux
@@ -24,8 +20,8 @@ PLATFORMS
 DEPENDENCIES
   asciidoctor (>= 2.0)
   asciidoctor-diagram (>= 2.2)
-  asciidoctor-revealjs (>= 4.1)
+  asciidoctor-revealjs (>= 5.0)
   rake (>= 13.0)
 
 BUNDLED WITH
-   2.3.15
+   2.4.19

@@ -18,8 +18,6 @@ Pour construire le cours, les outils suivants doivent être installés sur le sy
 * [`graphviz`](https://graphviz.org/) (pour les diagrammes)
 * [`rake`](https://ruby.github.io/rake/)
 
-Remarque : la version 4.1 d'asciidoctor-revealjs ne semble pas compatible avec la version 4 de revealjs d'où l'usage de la version 3.9.
-
 ### Installation des dépendances (gems)
 ```
 $ bundle install

@@ -4,7 +4,7 @@ require 'rake/clean'
 
 chapters = %w[intro devtools rust modeles-memoire energie conc] # %w définit un tableau de chaînes
 
-REVEALJS_VERION = "3.9.2"
+REVEALJS_VERION = "4.5.0"
 
 # Array : https://ruby-doc.org/core-trunk/Array.html
 # Rake::FileList : http://ruby-doc.org/stdlib-trunk/libdoc/rake/rdoc/Rake/FileList.html
