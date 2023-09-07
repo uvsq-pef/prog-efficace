@@ -434,6 +434,7 @@ TIP: Expérimentez ({rustlings}/modules[rustlings], {rbp}/crate-module/intro.htm
 ifdef::backend-revealjs[== !]
 
 === Autres documents
+* https://google.github.io/comprehensive-rust/[Comprehensive Rust], Google
 * https://stevedonovan.github.io/rust-gentle-intro/[A Gentle Introduction To Rust], _Steve Donovan_
 * https://blog.guillaume-gomez.fr/Rust/[Tutoriel Rust], _Guillaume Gomez_
 * https://cheats.rs/[Rust Language Cheat Sheet], _Ralf Biedert_
