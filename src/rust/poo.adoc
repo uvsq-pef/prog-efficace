@@ -154,10 +154,12 @@ include::shapes/tests/integration_tests.rs[tag=move_a_circle]
 ----
 
 == Fonction associée
-* Une https://doc.rust-lang.org/book/ch05-03-method-syntax.html#associated-functions[_fonction associée_] (_associated functions_) est une fonction définie dans le contexte d'une structure mais sans le paramètre `self`
-* Cette fonction est alors invoquée par l'intermédiaire du nom de la structure (`Rectangle::square(3)`)
+* Une https://doc.rust-lang.org/book/ch05-03-method-syntax.html#associated-functions[_fonction associée_] (_associated functions_) est une fonction définie dans le contexte d'une structure
+* Il est possible de définir une telle fonction sans le paramètre `self`
+** invoquée par l'intermédiaire du nom de la structure (`Rectangle::square(3)`)
 * Cette notion est à rapprocher du concept de _méthode de classe_
 * Une fonction qui retourne une instance d'une structure est dénommée _constructeur_
+** `Self` peut être utilisé pour référencer le type se trouvant après `impl`
 
 [source,rust,indent=0]
 ----
@@ -184,7 +186,7 @@ interface Déplaçable {
 ....
 
 == Type en Rust : les _traits_
-* Un https://doc.rust-lang.org/book/ch10-02-traits.html[_trait_] (`trait`) précise un ensemble d'opérations dont doit disposer un type*
+* Un https://doc.rust-lang.org/book/ch10-02-traits.html[_trait_] (`trait`) précise un ensemble d'opérations dont doit disposer un type
 * Une méthode d'un trait peut être abstraite ou disposer d'une implémentation par défaut
 * Un trait est proche de la notion d'_interface_ ou de _classe abstraite_ dans d'autres langages
 
@@ -367,7 +369,7 @@ Rectangle2D <|-- Rectangle2DPlein
 * Un tel objet pointe vers une instance d'un type implémentant le trait concerné
 ** la taille d'un objet trait ne peut pas être déterminée lors de la compilation
 * Le type d'un objet trait est construit à partir d'un type de pointeur (référence ou smart pointer), du mot-clé `dyn` et du nom du trait
-* Un objet trait dispose d'une _table de méthodes virtuelles_ (_vtable_)
+* Un objet trait dispose d'une https://en.wikipedia.org/wiki/Virtual_method_table[_table de méthodes virtuelles_] (_vtable_)
 
 ifdef::backend-revealjs[== !]
 
@@ -446,7 +448,7 @@ Rectangle2D <|-- Rectangle2DPlein
 ....
 
 == Polymorphisme en Rust
-* La table des méthodes virtuelles d'un objet trait permet de retarder le choix de la méthode à exécuter au moment de l'exécution
+* La https://en.wikipedia.org/wiki/Virtual_method_table[table des méthodes virtuelles] d'un objet trait permet de retarder le choix de la méthode à exécuter au moment de l'exécution
 
 .Déplacer des formes
 [source,rust,indent=0]

@@ -20,8 +20,8 @@ pub struct Point {
 impl Point {
     //tag::point_from[]
     /// Initialise un point à partir de coordonnées cartésiennes.
-    pub fn from(x: f64, y: f64) -> Point {
-        Point {
+    pub fn from(x: f64, y: f64) -> Self {
+        Self {
             x,
             y,
         }

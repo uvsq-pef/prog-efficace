@@ -21,8 +21,8 @@ pub struct Circle {
 /// 
 impl Circle {
     /// Initialise un cercle à partir de son centre et de son rayon.
-    pub fn from(center: Point, radius: f64) -> Circle {
-        Circle {
+    pub fn from(center: Point, radius: f64) -> Self {
+        Self {
             center,
             radius,
         }
