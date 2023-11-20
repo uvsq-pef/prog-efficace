@@ -1,5 +1,4 @@
 = Consommation Énergétique
-
 ifndef::masterdoc[]
 include::../meta.adoc[]
 include::../attributes.adoc[]
@@ -8,7 +7,6 @@ endif::masterdoc[]
 :leveloffset: +1
 
 include::modele-energie.adoc[]
-
 include::optimisations.adoc[]
 
 :leveloffset: -1
