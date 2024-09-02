@@ -7,7 +7,9 @@ endif::masterdoc[]
 :leveloffset: +1
 
 include::pef.adoc[]
+
 include::proglang.adoc[]
+
 include::rust.adoc[]
 
 :leveloffset: -1

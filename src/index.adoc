@@ -12,10 +12,15 @@ include::attributes.adoc[]
 :leveloffset: +1
 
 include::intro/intro.adoc[]
+
 include::devtools/devtools.adoc[]
+
 include::rust/rust.adoc[]
+
 include::modeles-memoire/modeles-memoire.adoc[]
+
 include::energie/energie.adoc[]
+
 //include::conc/conc.adoc[]
 
 :leveloffset: -1

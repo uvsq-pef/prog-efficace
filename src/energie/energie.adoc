@@ -7,6 +7,7 @@ endif::masterdoc[]
 :leveloffset: +1
 
 include::modele-energie.adoc[]
+
 include::optimisations.adoc[]
 
 :leveloffset: -1

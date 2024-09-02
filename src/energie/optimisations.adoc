@@ -1,9 +1,4 @@
 = Optimisations de code 
-:imagesdir: figs/
-:stem: latexmath
-:revealjs_customtheme: reveal.js/css/theme/beige.css
-:customcss: custom.css
-:revealjs_slideNumber: true
 
 == Mesure de performance
 

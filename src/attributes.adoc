@@ -1,4 +1,4 @@
-:stem:
+:stem: latexmath
 :icons: font
 :imagesdir: figs
 :source-highlighter: highlightjs

@@ -50,8 +50,9 @@ $ bundle exec rake
 1. [Arbres binaires de recherche](https://github.com/uvsq-pef/td_abr)
 1. [Optimisation de la multiplication de matrices](https://github.com/uvsq-pef/td_mult_mat)
 
-### Projet
-* [Gestionnaire de fichiers multimédias](https://github.com/uvsq-pef/medman)
+### Projets
+* [Analyseur d’espace disque](https://github.com/uvsq-pef/projet_du) (2023-2024)
+* [Gestionnaire de fichiers multimédias](https://github.com/uvsq-pef/medman) (2022-2023)
 
 ## Références
 * Cours de Stanford [CS 110L: Safety in Systems Programming](https://reberhardt.com/cs110l/) ([blog](https://reberhardt.com/blog/2020/10/05/designing-a-new-class-at-stanford-safety-in-systems-programming.html))

@@ -1,6 +1,4 @@
 = Consommation énergétique des ordinateurs
-:imagesdir: figs/
-:stem: latexmath
 
 == Puissance et Énergie
 
