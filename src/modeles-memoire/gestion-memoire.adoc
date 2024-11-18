@@ -142,7 +142,7 @@ free(ptr); // libération d'une zone non allouée
 ** les algorithmes générationnels
 * Un ramasse-miettes possède plusieurs avantages
 ** élimine presque totalement les problèmes de désallocation de la mémoire
-** peut optimiser les allocations/désallocation (meilleures performances)
+** peut optimiser les allocations/désallocations (meilleures performances)
 * Un ramasse-miettes comporte plusieurs inconvénients
 ** s'exécute en parallèle du programme (ralentissements)
 ** s'exécute _de temps en temps_ (peu prévisible, utilisation de plus de mémoire)
@@ -175,6 +175,7 @@ ifdef::backend-revealjs[== !]
 
 .Références
 * Article icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/Ramasse-miettes_(informatique)"] sur le ramasse-miette
+* https://www.baeldung.com/jvm-garbage-collectors[JVM Garbage Collectors], _Baeldung_
 * https://blogs.oracle.com/javamagazine/understanding-garbage-collectors[Understanding Garbage Collectors], _Christine H. Flood_, Java Magazine
 * https://blogs.oracle.com/javamagazine/understanding-the-jdks-new-superfast-garbage-collectors[Understanding the JDK’s New Superfast Garbage Collectors], _Raoul-Gabriel Urma_ & _Richard Warburton_, Java Magazine
 * https://blogs.oracle.com/javamagazine/epsilon-the-jdks-do-nothing-garbage-collector[Epsilon: The JDK’s Do-Nothing Garbage Collector], _Andrew Binstock_, Java Magazine
@@ -184,7 +185,7 @@ ifdef::backend-revealjs[== !]
 ** emprunte une valeur
 ** pas de fonctionnalités supplémentaires
 ** pas de surcoût (par rapport à un pointeur en C)
-* Les _smart pointers_ sont des structures
+* Les _smart pointers_ sont des structures (définies dans une bibliothèque)
 ** se comportant comme des pointeurs
 ** fournissant des fonctionnalités complémentaires
 
@@ -196,16 +197,17 @@ ifdef::backend-revealjs[== !]
 [horizontal]
 `Box<T>`:: alloue des valeurs sur le tas
 `Rc<T>`:: permet la propriété multiple par comptage de références
-`Ref<T>` et `RefMut<T>`:: contrôle les règles d'emprunt à l'exécution plutôt qu'à la compilation
+`RefCell<T>`, `Ref<T>` et `RefMut<T>`:: contrôle les règles d'emprunt à l'exécution plutôt qu'à la compilation
 * Ils implémentent les traits `Deref` et `Drop`
 +
 [horizontal]
 `Deref`:: fait qu'une instance se comporte comme une référence
 `Drop`:: permet d'adapter le code exécuté quand le pointeur quitte sa portée
+* De nombreuses alternatives existent: https://doc.rust-lang.org/std/cell/struct.Cell.html[`Cell<T>`], https://doc.rust-lang.org/std/cell/struct.OnceCell.html[`OnceCell<T>`], https://doc.rust-lang.org/std/sync/struct.Arc.html[`Arc<T>`] , https://doc.rust-lang.org/std/sync/struct.Mutex.html[`Mutex`], https://doc.rust-lang.org/std/sync/struct.RwLock.html[`RwLock`]
 
 == Smart pointer `Box<T>`
-* Le smart pointer https://doc.rust-lang.org/std/boxed/struct.Box.html[`Box<T>`] permet d'allouer une valeur sur le tas
-* Pas de surcoût supplémentaire
+* Le smart pointer https://doc.rust-lang.org/std/boxed/index.html[`Box<T>`] permet d'allouer une valeur sur le tas
+* Pas de coût supplémentaire
 * Pas d'autres capacités particulières
 * Utilité
 ** quand la taille d'un type ne peut pas être connue à la compilation
@@ -239,10 +241,106 @@ impl<T> Deref for MyBox<T> {
 * Le trait https://doc.rust-lang.org/std/ops/trait.Drop.html[`Drop`] permet d'adapter le code exécuté lorsqu'un smart pointer sort de sa portée (_destructeur_)
 * Implémenter ce trait consiste à définir la fonction `fn drop(&mut self)`
 * Cette fonction ne peut pas être appelée explicitement mais l'est par le compilateur
+** il est toutefois possible de forcer l'appel en utilisant https://doc.rust-lang.org/std/mem/fn.drop.html[`std::mem::drop`]
 
 == Smart pointer `Rc<T>`
-* La structure https://doc.rust-lang.org/std/rc/struct.Rc.html[`Rc<T>`] permet de partager la propriété d'une valeur allouée sur la pile entre plusieurs propriétaires
-* Elle utilise un système de comptage de références
+* La structure https://doc.rust-lang.org/std/rc/index.html[`Rc<T>`] permet de partager la propriété d'une valeur allouée sur le tas entre plusieurs propriétaires
+** elle utilise un système de comptage de références (_Reference Counted_)
 * L'appel de https://doc.rust-lang.org/std/rc/struct.Rc.html#impl-Clone[`clone`] crée un nouveau pointeur sur la même valeur
+** et incrémente le compteur de références
+** le compteur est consultable avec la méthode https://doc.rust-lang.org/std/rc/struct.Rc.html#method.strong_count[`Rc::strong_count`]
 * Quand le dernier pointeur `Rc` est détruit, la valeur est elle-même détruite
 * Cette structure ne peut pas être utilisée dans un contexte multi-thread
+
+[source,rust,indent=0]
+----
+enum List {
+    Cons(i32, Rc<List>), //<1>
+    Nil,
+}
+
+use crate::List::{Cons, Nil};
+use std::rc::Rc;
+
+fn main() {
+    let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
+    let b = Cons(3, Rc::clone(&a)); //<2>
+    let c = Cons(4, Rc::clone(&a));
+}
+----
+<1> Le type de smart pointer est `Rc`
+<2> `Rc::clone` incrémente le comptage des références
+
+== Interior Mutability Pattern
+* La vérification à la compilation du bon usage de la mémoire apporte une grande fiabilité
+* Cependant, dans certaines circonstances, il est utile de pouvoir affaiblir ces contraintes pour une plus grande flexibilité
+* Le pattern https://doc.rust-lang.org/std/cell/index.html[_Interior Mutability_] permet d'obtenir plusieurs références sur un objet tout en permettant sa modification
++
+[horizontal]
+https://doc.rust-lang.org/std/cell/struct.Cell.html[`Cell<T>`]:: permet de déplacer la valeur depuis et vers le container
+https://doc.rust-lang.org/std/cell/struct.RefCell.html[`RefCell<T>`]:: contrôle les règles d'emprunt à l'exécution plutôt qu'à la compilation
+https://doc.rust-lang.org/std/cell/struct.OnceCell.html[`OnceCell<T>`]:: pour des valeurs qui ne doivent être fixées qu'une unique fois
+
+== Smart pointer `RefCell<T>`
+* La structure https://doc.rust-lang.org/std/cell/struct.RefCell.html[`RefCell<T>`] permet de retarder la vérification des règles d'emprunt *au moment de l'exécution* (_dynamic borrowing_)
+** est propriétaire de la donnée qu'il contient
+** panique si la vérification échoue
+* Les méthode https://doc.rust-lang.org/std/cell/struct.RefCell.html#method.borrow[`borrow`] et https://doc.rust-lang.org/std/cell/struct.RefCell.html#method.borrow_mut[`borrow_mut`] permettent de récupérer une référence sur l'objet encapsulé
+
+[source,rust,indent=0]
+----
+#[derive(Debug)]
+enum List {
+    Cons(Rc<RefCell<i32>>, Rc<List>),
+    Nil,
+}
+
+use crate::List::{Cons, Nil};
+use std::cell::RefCell;
+use std::rc::Rc;
+
+fn main() {
+    let value = Rc::new(RefCell::new(5));
+
+    let a = Rc::new(Cons(Rc::clone(&value), Rc::new(Nil)));
+
+    let b = Cons(Rc::new(RefCell::new(3)), Rc::clone(&a));
+    let c = Cons(Rc::new(RefCell::new(4)), Rc::clone(&a));
+
+    *value.borrow_mut() += 10;
+
+    println!("a after = {a:?}"); // a after = Cons(RefCell { value: 15 }, Nil)
+    println!("b after = {b:?}"); // b after = Cons(RefCell { value: 3 }, Cons(RefCell { value: 15 }, Nil))
+    println!("c after = {c:?}"); // c after = Cons(RefCell { value: 4 }, Cons(RefCell { value: 15 }, Nil))
+}
+----
+
+== Cas d'utilisation de quelques smart pointers
+* `Rc<T>` permet d'avoir *plusieurs propriétaires* pour une même donnée;
+`Box<T>` et `RefCell<T>` n'ont qu'*un seul propriétaire*.
+* `Box<T>` permet des *emprunts immuables ou mutables à la compilation*;
+Rc<T> permet uniquement des *emprunts immuables, vérifiés à la compilation*;
+RefCell<T> permet des *emprunts immuables ou mutables, vérifiés à l'exécution*.
+* Comme `RefCell<T>` permet des emprunts mutables, vérifiés à l'exécution, vous pouvez muter la valeur à l'intérieur du `RefCell<T>` même si le `RefCell<T>` est immuable.
+
+== Unsafe Rust
+* Cette https://doc.rust-lang.org/reference/unsafety.html[partie du langage] permet de contourner l'analyse statique quand elle est trop conservative
+* Un bloc `unsafe` donne accès à cinq _super-pouvoirs_
+** déréférencer un pointeur brut
+** faire appel à une fonction ou une méthode non sécurisée
+** lire ou modifier une variable statique mutable
+** implémenter un trait non sécurisé
+** accéder aux champs des union
+
+[source,rust,indent=0]
+----
+let mut nombre = 5;
+
+let r1 = &nombre as *const i32;
+let r2 = &mut nombre as *mut i32;
+
+unsafe {
+    println!("r1 vaut : {}", *r1);
+    println!("r2 vaut : {}", *r2);
+}
+----
