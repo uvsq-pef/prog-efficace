@@ -428,8 +428,10 @@ TIP: Expérimentez ({rustlings}/modules[rustlings], {rbp}/crate-module/intro.htm
 === Documentation officielle
 * https://www.rust-lang.org/fr/[Site officiel]
 * {rl-book}/[The Rust Programming Language], _Steve Klabnik and Carol Nichols_
+** https://rust-book.cs.brown.edu/[version avec quizz]
 * {rl}/std/index.html[Documentation] de la bibliothèque standard
 * {rl}/reference/index.html[Référence] du langage
+* {rl}/nomicon/intro.html[The Rustonomicon]
 
 ifdef::backend-revealjs[== !]
 
@@ -437,14 +439,28 @@ ifdef::backend-revealjs[== !]
 * https://google.github.io/comprehensive-rust/[Comprehensive Rust], Google
 * https://stevedonovan.github.io/rust-gentle-intro/[A Gentle Introduction To Rust], _Steve Donovan_
 * https://blog.guillaume-gomez.fr/Rust/[Tutoriel Rust], _Guillaume Gomez_
+* https://www.lurklurk.org/effective-rust/title-page.html[Effective Rust], _David Drysdale_, 2024
+* https://cliffle.com/p/dangerust/[Learn Rust the Dangerous Way], _Cliff L. Biffle_, 2024
 * https://cheats.rs/[Rust Language Cheat Sheet], _Ralf Biedert_
 * https://serokell.io/blog/learn-rust[17 Resources to Help You Learn Rust in 2022], _Gints Dreimanis_, 2022
+* https://grasland.pages.in2p3.fr/rust-cpp-intro/[Rust vu du C++], _Hadrien Grasland_, 2023
+* https://blog.jetbrains.com/fr/rust/2024/11/22/comment-se-former-a-rust-en-2024-un-guide-complet-pour-aider-les-debutants-a-maitriser-la-programmation-rust/[Comment se former à Rust en 2024], _JetBrains_, 2024
+* https://discord.com/blog/why-discord-is-switching-from-go-to-rust[Pourquoi Discord passe de Go à Rust], _Jesse Howarth_, 2020
 
 ifdef::backend-revealjs[== !]
 
 === Apprendre en codant
-** https://play.rust-lang.org/[Playground] (coder dans le navigateur)
-** https://github.com/rust-lang/rustlings/[rustlings] (ensemble d'exercices pour apprendre le langage)
-** {rl}/stable/rust-by-example/[Rust by Example] (exemples exécutables dans le navigateur)
-** {rbp}/why-exercise.html[Rust by practice]
-** https://rust-unofficial.github.io/too-many-lists/[Learn Rust With Entirely Too Many Linked Lists]
+* https://play.rust-lang.org/[Playground] (coder dans le navigateur)
+* https://github.com/rust-lang/rustlings/[rustlings] (ensemble d'exercices pour apprendre le langage)
+* {rl}/stable/rust-by-example/[Rust by Example] (exemples exécutables dans le navigateur)
+* {rbp}/why-exercise.html[Rust by practice]
+* https://rust-unofficial.github.io/too-many-lists/[Learn Rust With Entirely Too Many Linked Lists]
+* https://jrdngr.github.io/pngme_book/[PNGme: An Intermediate Rust Project], 2024
+
+ifdef::backend-revealjs[== !]
+
+=== Sujets spécifiques
+* https://corrode.dev/blog/prototyping/[Prototyping in Rust], _Matthias Endler_, 2025
+* https://www.howtocodeit.com/articles/ultimate-guide-rust-newtypes#what-are-newtype-wrappers-in-rust[The ultimate guide to Rust newtypes], _How To Code It_, 2023
+* https://www.howtocodeit.com/articles/the-definitive-guide-to-rust-error-handling[The definitive guide to error handling in Rust], _How To Code It_, 2024
+* https://sabrinajewson.org/blog/errors[Modular Errors in Rust], _Sabrina Jewson_, 2023
