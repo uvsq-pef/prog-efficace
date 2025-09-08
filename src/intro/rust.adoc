@@ -3,7 +3,7 @@
 :rl-book: {rl}/book
 :rl-api: {rl}/std
 :rustlings: https://github.com/rust-lang/rustlings/tree/main/exercises
-:rbp: https://practice.rs
+:rbp: https://practice.course.rs/
 :rbe: https://doc.rust-lang.org/stable/rust-by-example
 
 = Rust RefCard
@@ -149,7 +149,7 @@ Hello, world!
 {rl-api}/primitive.array.html[`array`]:: Tableau de taille fixe
 {rl-api}/primitive.tuple.html[`tuple`]:: Séquence d'éléments hétérogènes
 
-TIP: Expérimentez ({rustlings}/primitive_types[rustlings], {rbp}/basic-types/numbers.html[Rust By Practice], {rbe}/primitives.html[Rust by Example])
+TIP: Expérimentez ({rustlings}/04_primitive_types[rustlings], {rbp}/basic-types/numbers.html[Rust By Practice], {rbe}/primitives.html[Rust by Example])
 
 == Littéraux
 * Un {rl-ref}/tokens.html#literals[littéral] représente la valeur d'un type
@@ -192,7 +192,7 @@ let x = x * 2;
 let x: u32 = 5;
 ----
 
-TIP: Expérimentez ({rustlings}/variables[rustlings], {rbp}/variables.html[Rust By Practice], {rbe}/variable_bindings.html[Rust by Example])
+TIP: Expérimentez ({rustlings}/01_variables[rustlings], {rbp}/variables.html[Rust By Practice], {rbe}/variable_bindings.html[Rust by Example])
 
 == Constantes
 * Une {rl-ref}/items/constant-items.html[constante] est introduite par le mot-clé `const` et doit être annotée par son type
@@ -304,7 +304,7 @@ include::exemples/strings.rs[tag=string]
 <1> `hello` et `world` sont de type `String`
 <2> Concatène les deux variables (`hello` est déplacé, `world` est emprunté)
 
-TIP: Expérimentez ({rustlings}/strings[rustlings], {rbp}/compound-types/string.html[Rust By Practice], {rbe}/std/str.html[Rust by Example])
+TIP: Expérimentez ({rustlings}/09_strings[rustlings], {rbp}/compound-types/string.html[Rust By Practice], {rbe}/std/str.html[Rust by Example])
 
 == Structures de contrôle
 === Conditionnelle
@@ -362,7 +362,7 @@ include::exemples/control.rs[tag=for]
 <1> `for` permet d'itérer sur les éléments d'une collection
 <2> en utilisant le type {rl}/std/ops/struct.Range.html[`Range`], on peut manipuler des indices
 
-TIP: Expérimentez ({rustlings}/if[rustlings], {rbp}/flow-control.html[Rust By Practice], {rbe}/flow_control.html[Rust by Example])
+TIP: Expérimentez ({rustlings}/03_if[rustlings], {rbp}/flow-control.html[Rust By Practice], {rbe}/flow_control.html[Rust by Example])
 
 == Fonction
 * La définition d'une {rl-book}/ch03-03-how-functions-work.html[fonction] est introduite par le mot-clé `fn`
@@ -385,7 +385,7 @@ include::exemples/function.rs[tag=five]
 +
 WARNING: pour pouvoir être retournée, la dernière ligne d'une fonction *doit être une expression* (pas de `;`). Une instruction (terminée par un `;`) provoquerait une erreur de compilation.
 
-TIP: Expérimentez ({rustlings}/functions[rustlings], {rbp}/basic-types/functions.html[Rust By Practice], {rbe}/fn.html[Rust by Example])
+TIP: Expérimentez ({rustlings}/02_functions[rustlings], {rbp}/basic-types/functions.html[Rust By Practice], {rbe}/fn.html[Rust by Example])
 
 == Système de modules
 * Rust supporte différents moyens pour organiser un projet
@@ -403,7 +403,7 @@ use std::fmt::Result;
 use std::io::Result as IoResult;
 ----
 
-TIP: Expérimentez ({rustlings}/modules[rustlings], {rbp}/crate-module/intro.html[Rust By Practice], {rbe}/mod.html[Rust by Example])
+TIP: Expérimentez ({rustlings}/10_modules[rustlings], {rbp}/crate-module/intro.html[Rust By Practice], {rbe}/mod.html[Rust by Example])
 
 == Bibliothèques
 * Rust est distribué avec une riche {rl}/std/index.html[bibliothèque standard]
@@ -417,9 +417,9 @@ TIP: Expérimentez ({rustlings}/modules[rustlings], {rbp}/crate-module/intro.htm
 {rl}/std/ops/struct.Range.html[`Range`]:: représente un intervalle (littéral `start..end`) ({rbe}/flow_control/for.html[Rust by Example])
 {rl}/std/primitive.tuple.html[`Tuple`]:: une séquence finie et hétérogène d'éléments (littéral `("hello", 5, 'c')`) ({rbp}/compound-types/tuple.html[Rust By Practice], {rbe}/primitives/tuples.html[Rust by Example])
 {rl}/1.54.0/std/primitive.array.html[`Tableau`]:: un tableau de taille fixe d'éléments de même type (littéral `[x, y, z]` ou `[x; N]`) ({rbp}/compound-types/array.html[Rust By Practice], {rbe}/primitives/array.html[Rust by Example])
-{rl}/std/vec/struct.Vec.html[`Vec<T>`]:: un tableau de taille variable ({rustlings}/vecs[rustlings], {rbp}/collections/vector.html[Rust By Practice], {rbe}/std/vec.html[Rust by Example])
+{rl}/std/vec/struct.Vec.html[`Vec<T>`]:: un tableau de taille variable ({rustlings}/05_vecs[rustlings], {rbp}/collections/vector.html[Rust By Practice], {rbe}/std/vec.html[Rust by Example])
 {rl}/std/result/index.html[`Result<T, E>`]:: pour retourner et propager une erreur ({rbp}/result-panic/result.html[Rust By Practice], {rbe}/std/result.html[Rust by Example])
-{rl}/std/option/index.html[`Option<T>`]:: pour représenter une valeur optionnel ({rustlings}/options[rustlings], {rbe}/std/option.html[Rust by Example])
+{rl}/std/option/index.html[`Option<T>`]:: pour représenter une valeur optionnel ({rustlings}/12_options[rustlings], {rbe}/std/option.html[Rust by Example])
 {rl}/std/collections/index.html[std::collections]:: manipulation de collections
 {rl}/std/fmt/index.html[std::fmt]:: formatage de chaînes de caractères ({rbp}/formatted-output/formatting.html[Rust By Practice], {rbe}/hello/print.html[Rust by Example])
 {rl}/std/io/index.html[std::io]:: gestion des I/O ({rbe}/std_misc/file.html[Rust by Example])
