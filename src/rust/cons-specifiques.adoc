@@ -182,7 +182,7 @@ panic!("This is not implemented yet.");
 ifdef::backend-revealjs[== !]
 
 === Consommation de la valeur `Result`
-- Contrairement à `Option``, un `Result` doit toujours être utilisé.
+- Contrairement à `Option`, un `Result` doit toujours être utilisé.
 - Le compilateur génère un avertissement si un `Result` n'est pas consommé.
 
 .src/rust/exemples/option.rs
