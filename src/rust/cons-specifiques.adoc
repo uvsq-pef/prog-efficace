@@ -13,6 +13,7 @@
 ** à partir d'une expression et d'un nombre de copies (`[x; N]` _N_ copies de _x_)
 * L'accès aux éléments se fait par indice (`t[0]`)
 
+== Tableaux - Exemple
 .src/rust/exemples/array.rs
 [source,rust,indent=0]
 ----
@@ -108,6 +109,8 @@ include::exemples/tuple.rs[tag=tuple]
 <1> le type de `tuple` est `(&'static str, i32, char)`
 <2> accès aux champs par `.0`, `.1`, …
 <3> _pattern matching_ pour déconstruire le tuple
+
+== Structures Tuples
 - Les https://doc.rust-lang.org/book/ch05-01-defining-structs.html#using-tuple-structs-without-named-fields-to-create-different-types[structures tuples] sont un cas particulier de structure où les membres ne sont pas nommés (similaires au type primitif tuple)
 +
 .src/rust/exemples/tuple.rs
