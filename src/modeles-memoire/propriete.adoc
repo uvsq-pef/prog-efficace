@@ -52,6 +52,8 @@ Pour toute donnée, rust définit une variable https://doc.rust-lang.org/book/ch
 * Quand le propriétaire devient _hors-portée_, la valeur est supprimée.
 ====
 
+== Propriétaire - Exemple
+
 [source, rust]
 ----
 fn test() {
@@ -62,7 +64,7 @@ fn test() {
 ----
 <1> `a` est propriétaire du scalaire
 <2> `v` est propriétaire du vecteur
-<3> En fin de bloc `a` et `v` sont _hors-portée_. Leur mémoire est automatiquement libérée par rust. Le flottant `1.0` est dépilé et le vecteur désalloué avec un appel à ``drop()`.
+<3> En fin de bloc `a` et `v` sont _hors-portée_. Leur mémoire est automatiquement libérée par rust. Le flottant `1.0` est dépilé et le vecteur désalloué avec un appel à `drop()`.
 
 == Trait `Copy`
 - Les types primitifs (alloués sur la pile) implémentent le trait https://doc.rust-lang.org/core/marker/trait.Copy.html[`Copy`].
@@ -176,7 +178,7 @@ fn main() {
 ----
 
 == Emprunts mutables
-- Par défaut les emprunts sont immutables. Pour pouvoir modifier l'objet emprunté, il nous faut un type `& mut`
+- Par défaut les emprunts sont immutables. Pour pouvoir modifier l'objet emprunté, il nous faut un type `&mut`
 
 [source, rust]
 ----
