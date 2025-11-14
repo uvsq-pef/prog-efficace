@@ -1,7 +1,7 @@
 :stem: latexmath
 :icons: font
 :imagesdir: figs
-:source-highlighter: highlightjs
+:source-highlighter: highlight.js
 :revealjsdir: reveal.js
 :revealjs_theme: beige
 :customcss: css/custom.css

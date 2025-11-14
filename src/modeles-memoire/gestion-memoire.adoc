@@ -1,8 +1,26 @@
 = Gestion de la mémoire
 
+[.columns]
 == Mémoire physique et mémoire virtuelle
-.Mémoire physique et mémoire virtuelle (source icon:wikipedia-w[link="https://commons.wikimedia.org/wiki/File:Memoire_virtuelle.svg?uselang=fr"])
-image::virtmem.svg[Mémoire virtuelle,303,480,role=right]
+ifndef::backend-revealjs[]
+[.float-group]
+--
+[.right]
+endif::[]
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
+.Mémoire physique et virtuelle (source icon:wikipedia-w[link="https://commons.wikimedia.org/wiki/File:Memoire_virtuelle.svg?uselang=fr"])
+image::virtmem.svg[Mémoire virtuelle,303,480]
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
 * L'accès à la mémoire physique d'un ordinateur est « simplifiée » par l'utilisation du mécanisme de _mémoire virtuelle_
 ** la mémoire virtuelle fournit une *abstraction* pour l'accès à la mémoire
 * Ce mécanisme permet de
@@ -10,17 +28,43 @@ image::virtmem.svg[Mémoire virtuelle,303,480,role=right]
 ** protéger les accès à la mémoire
 ** partager des zones de mémoire entre processus
 * La mémoire virtuelle repose sur de nombreux mécanismes pour son fonctionnement (_pagination_ ou _segmentation_, _traduction d'adresses_, _Memory Management Unit_ ou _MMU_, …)
+ifdef::backend-revealjs[]
+--
+endif::[]
+ifndef::backend-revealjs[]
+--
+endif::[]
+
+ifdef::backend-revealjs[== !]
 
 .Références
 * Article icon:wikipedia-w[link="https://fr.wikipedia.org/wiki/M%C3%A9moire_virtuelle"] sur la mémoire virtuelle
 * Chapitre sur la https://fr.wikibooks.org/wiki/Fonctionnement_d%27un_ordinateur/La_m%C3%A9moire_virtuelle[mémoire virtuelle] du cours https://fr.wikibooks.org/wiki/Fonctionnement_d%27un_ordinateur[Fonctionnement d'un ordinateur]
 * Présentation https://youtu.be/nXYXLuqsllY[Le processus de boot], Samuel Ortiz, Devoxx FR, 2021
 
+[.columns]
 == Mémoire d'un processus
+ifndef::backend-revealjs[]
+[.float-group]
+--
+[.right]
+endif::[]
+ifdef::backend-revealjs[]
+[.column.is-one-third]
+--
+endif::[]
 .Mémoire d'un processus (source icon:wikipedia-w[link="https://commons.wikimedia.org/wiki/File:Typical_computer_data_memory_arrangement.png"])
-image::memlayout.png[Mémoire d'un processus,201,597,role=right]
+image::memlayout.png[Mémoire d'un processus,201,597]
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
 * L'OS et le matériel travaillent de concert pour que chaque processus ait l'impression
-** de disposer d'une vaste zone de mémoire contigüe
+** de disposer d'une vaste zone de mémoire contiguë
 ** d'être seul à s'exécuter
 * La zone du programme comprend
 ** le segment _text_ qui contient le code du programme
@@ -29,19 +73,39 @@ image::memlayout.png[Mémoire d'un processus,201,597,role=right]
 * Le tas (_heap_) représente la mémoire allouée dynamiquement
 ** croît vers les adresses hautes
 * La mémoire libre sert de réserve
-* La pile (_Stack_) conserve les variables locales d'une fonction
-** débute à la plus haute adresse et croît vers les adresses basses
-** contient un cadre (_frame_) pour chaque fonction
-** lors d'un appel de fonction, sont empilés l'adresse de retour de la fonction, les paramètres, les variables locales de la fonction
-** lorsque l'on quitte une fonction, le cadre correspondant est supprimé
-** sa taille est réservée statiquement
+* La pile (cf. ci-dessous)
+ifdef::backend-revealjs[]
+--
+endif::[]
+ifndef::backend-revealjs[]
+--
+endif::[]
+
+ifdef::backend-revealjs[== !]
 
 .Référence
 * https://ilay.org/yann/articles/mem/[Gestion de la mémoire en C]
 
+== La pile
+* La pile (_Stack_) conserve les variables locales d'une fonction
+* Débute à la plus haute adresse et croît vers les adresses basses
+* Est composée d'un cadre (_frame_) pour chaque fonction
+** lors d'un appel de fonction, sont empilés l'adresse de retour de la fonction, les paramètres, les variables locales de la fonction
+** lorsque l'on quitte une fonction, le cadre correspondant est supprimé
++
+WARNING: Toute variable allouée sur la pile dans une fonction n'est plus accessible après la fin de la fonction
+* Sa taille est réservée statiquement
++
+WARNING: La taille de la pile ne peut pas être modifiée à l'exécution (dynamiquement)
+
 == Problèmes et erreurs liés à la mémoire
 * De nombreuses erreurs peuvent conduire à des problèmes d'utilisation de la mémoire
+
+.Références
+* https://queue.acm.org/detail.cfm?id=3773095[Memory Safety for Skeptics], _Andrew Lilley Brinker_, ACM Queue 2025
+
 * Les exemples suivants sont en langage C
+
 
 .Déréférencement d'un pointeur null ou invalide
 [source,c,indent=0]
