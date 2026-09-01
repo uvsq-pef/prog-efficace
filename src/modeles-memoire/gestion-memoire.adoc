@@ -94,9 +94,7 @@ ifdef::backend-revealjs[== !]
 ** lorsque l'on quitte une fonction, le cadre correspondant est supprimé
 +
 WARNING: Toute variable allouée sur la pile dans une fonction n'est plus accessible après la fin de la fonction
-* Sa taille est réservée statiquement
-+
-WARNING: La taille de la pile ne peut pas être modifiée à l'exécution (dynamiquement)
+* Sa taille maximum est définie statiquement
 
 == Problèmes et erreurs liés à la mémoire
 * De nombreuses erreurs peuvent conduire à des problèmes d'utilisation de la mémoire
