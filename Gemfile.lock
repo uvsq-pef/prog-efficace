@@ -1,17 +1,18 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    asciidoctor (2.0.23)
-    asciidoctor-diagram (3.0.1)
+    asciidoctor (2.0.26)
+    asciidoctor-diagram (3.2.1)
       asciidoctor (>= 1.5.7, < 3.x)
       rexml
-    asciidoctor-diagram-batik (1.17)
-    asciidoctor-diagram-plantuml (1.2025.3)
+    asciidoctor-diagram-batik (1.19)
+    asciidoctor-diagram-plantuml (1.2026.2)
+      asciidoctor-diagram (~> 3.2, >= 3.2.1)
       asciidoctor-diagram-batik (~> 1.17)
     asciidoctor-revealjs (5.2.0)
       asciidoctor (>= 2.0.0, < 3.0.0)
-    rake (13.3.0)
-    rexml (3.4.2)
+    rake (13.4.2)
+    rexml (3.4.4)
 
 PLATFORMS
   ruby
@@ -19,8 +20,8 @@ PLATFORMS
 
 DEPENDENCIES
   asciidoctor (>= 2.0)
-  asciidoctor-diagram (>= 3.0)
-  asciidoctor-diagram-plantuml (~> 1.2025, >= 1.2025.3)
+  asciidoctor-diagram (>= 3.2)
+  asciidoctor-diagram-plantuml (~> 1.2026, >= 1.2026.2)
   asciidoctor-revealjs (>= 5.2)
   rake (>= 13.3)
 
