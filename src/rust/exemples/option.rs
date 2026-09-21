@@ -5,7 +5,7 @@ use std::io::Read;
 
 // tag::option[]
 fn racine(n : f64) -> Option<f64> {
-    if n > 0.0 {
+    if n >= 0.0 {
         Some(n.sqrt())
     } else {
         None
