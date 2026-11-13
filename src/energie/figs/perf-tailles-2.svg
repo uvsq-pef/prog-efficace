@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="sans-serif">
+<text x="406.0" y="24" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e293b">Latence d'accès mémoire en Rust (balayage complet)</text>
+<line x1="82" y1="355.0" x2="730" y2="355.0" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="360.0" text-anchor="end" font-size="13" fill="#475569">1</text>
+<line x1="82" y1="315.9" x2="730" y2="315.9" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="320.9" text-anchor="end" font-size="13" fill="#475569">2</text>
+<line x1="82" y1="276.8" x2="730" y2="276.8" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="281.8" text-anchor="end" font-size="13" fill="#475569">4</text>
+<line x1="82" y1="237.6" x2="730" y2="237.6" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="242.6" text-anchor="end" font-size="13" fill="#475569">8</text>
+<line x1="82" y1="198.5" x2="730" y2="198.5" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="203.5" text-anchor="end" font-size="13" fill="#475569">16</text>
+<line x1="82" y1="159.4" x2="730" y2="159.4" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="164.4" text-anchor="end" font-size="13" fill="#475569">32</text>
+<line x1="82" y1="120.2" x2="730" y2="120.2" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="125.2" text-anchor="end" font-size="13" fill="#475569">64</text>
+<line x1="82" y1="81.1" x2="730" y2="81.1" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="86.1" text-anchor="end" font-size="13" fill="#475569">128</text>
+<line x1="82" y1="42.0" x2="730" y2="42.0" stroke="#cbd5e1" stroke-width="1"/>
+<text x="72" y="47.0" text-anchor="end" font-size="13" fill="#475569">256</text>
+<line x1="82.0" y1="42" x2="82.0" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="82.0" y="377" text-anchor="middle" font-size="13" fill="#475569">4 KiB</text>
+<line x1="174.6" y1="42" x2="174.6" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="174.6" y="377" text-anchor="middle" font-size="13" fill="#475569">16 KiB</text>
+<line x1="267.1" y1="42" x2="267.1" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="267.1" y="377" text-anchor="middle" font-size="13" fill="#475569">64 KiB</text>
+<line x1="359.7" y1="42" x2="359.7" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="359.7" y="377" text-anchor="middle" font-size="13" fill="#475569">256 KiB</text>
+<line x1="452.3" y1="42" x2="452.3" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="452.3" y="377" text-anchor="middle" font-size="13" fill="#475569">1 MiB</text>
+<line x1="544.9" y1="42" x2="544.9" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="544.9" y="377" text-anchor="middle" font-size="13" fill="#475569">4 MiB</text>
+<line x1="637.4" y1="42" x2="637.4" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="637.4" y="377" text-anchor="middle" font-size="13" fill="#475569">16 MiB</text>
+<line x1="730.0" y1="42" x2="730.0" y2="355" stroke="#e2e8f0" stroke-width="1"/>
+<text x="730.0" y="377" text-anchor="middle" font-size="13" fill="#475569">64 MiB</text>
+<line x1="82" y1="42" x2="82" y2="355" stroke="#334155" stroke-width="1.8"/>
+<line x1="82" y1="355" x2="730" y2="355" stroke="#334155" stroke-width="1.8"/>
+<text x="406.0" y="408" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e293b">Taille du tableau en mémoire (échelle log)</text>
+<text x="22" y="198.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e293b" transform="rotate(-90 22 198.5)">Latence par accès (ns, échelle log)</text>
+<rect x="82.0" y="42" width="165.9" height="313" fill="#dcfce7" fill-opacity="0.38"/>
+<text x="165.0" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#15803d">L1 (48 KiB)</text>
+<rect x="247.9" y="42" width="265.5" height="313" fill="#dbeafe" fill-opacity="0.38"/>
+<text x="380.7" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">L2 (2.5 MiB)</text>
+<rect x="513.5" y="42" width="77.7" height="313" fill="#fef3c7" fill-opacity="0.38"/>
+<text x="552.3" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#b45309">L3 (8 MiB)</text>
+<rect x="591.1" y="42" width="138.9" height="313" fill="#fee2e2" fill-opacity="0.38"/>
+<text x="660.6" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#b91c1c">RAM</text>
+<line x1="82" y1="315.9" x2="730" y2="315.9" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="276.8" x2="730" y2="276.8" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="237.6" x2="730" y2="237.6" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="198.5" x2="730" y2="198.5" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="159.4" x2="730" y2="159.4" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="120.2" x2="730" y2="120.2" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="81.1" x2="730" y2="81.1" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="82" y1="42.0" x2="730" y2="42.0" stroke="#94a3b8" stroke-opacity="0.3" stroke-width="1"/>
+<line x1="267.1" y1="270.6" x2="637.4" y2="101.2" stroke="#b91c1c" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="6,5"/>
+<polyline points="82.0,319.9 128.3,319.9 174.6,319.9 201.6,319.9 220.9,319.8 247.9,318.3 267.1,270.6 294.2,270.6 313.4,270.5 340.5,270.4 359.7,252.2 386.8,247.5 406.0,247.5 433.1,247.6 452.3,247.5 479.4,247.5 498.6,247.4 513.5,245.3 525.6,202.5 544.9,194.6 559.8,190.8 571.9,187.2 591.1,164.9 618.2,128.1 637.4,101.2 664.5,94.4 683.7,90.2 710.8,87.2 730.0,86.0" fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+<circle cx="82.0" cy="319.9" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="128.3" cy="319.9" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="174.6" cy="319.9" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="201.6" cy="319.9" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="220.9" cy="319.8" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="247.9" cy="318.3" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="267.1" cy="270.6" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="294.2" cy="270.6" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="313.4" cy="270.5" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="340.5" cy="270.4" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="359.7" cy="252.2" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="386.8" cy="247.5" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="406.0" cy="247.5" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="433.1" cy="247.6" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="452.3" cy="247.5" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="479.4" cy="247.5" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="498.6" cy="247.4" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="513.5" cy="245.3" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="525.6" cy="202.5" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="544.9" cy="194.6" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="559.8" cy="190.8" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="571.9" cy="187.2" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="591.1" cy="164.9" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="618.2" cy="128.1" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="637.4" cy="101.2" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="664.5" cy="94.4" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="683.7" cy="90.2" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="710.8" cy="87.2" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+<circle cx="730.0" cy="86.0" r="4.2" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.2"/>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 175" font-family="sans-serif">
+<defs>
+  <marker id="arr-pf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e293b"/>
+  </marker>
+  <marker id="arr-pf-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d4ed8"/>
+  </marker>
+</defs>
+<text x="206" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#334155">Ligne de cache 1 (64 octets)</text>
+<rect x="30" y="56" width="44" height="38" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.6"/>
+<text x="52.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">Miss</text>
+<text x="52.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[0]</text>
+<rect x="74" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="96.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="96.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[1]</text>
+<rect x="118" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="140.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="140.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[2]</text>
+<rect x="162" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="184.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="184.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[3]</text>
+<rect x="206" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="228.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="228.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[4]</text>
+<rect x="250" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="272.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="272.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[5]</text>
+<rect x="294" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="316.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="316.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[6]</text>
+<rect x="338" y="56" width="44" height="38" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+<text x="360.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">Hit</text>
+<text x="360.0" y="80" text-anchor="middle" font-size="12" fill="#1e293b">a[7]</text>
+<line x1="42" y1="108" x2="372" y2="108" stroke="#1e293b" stroke-width="2" marker-end="url(#arr-pf)"/>
+<text x="586" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">Ligne 2 (préchargée en avance)</text>
+<rect x="410" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="432.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="432.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[8]</text>
+<rect x="454" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="476.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="476.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[9]</text>
+<rect x="498" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="520.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="520.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[10]</text>
+<rect x="542" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="564.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="564.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[11]</text>
+<rect x="586" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="608.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="608.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[12]</text>
+<rect x="630" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="652.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="652.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[13]</text>
+<rect x="674" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="696.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="696.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[14]</text>
+<rect x="718" y="56" width="44" height="38" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.6"/>
+<text x="740.0" y="49" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">Hit</text>
+<text x="740.0" y="80" text-anchor="middle" font-size="11.5" fill="#1e293b">a[15]</text>
+<line x1="422" y1="108" x2="752" y2="108" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arr-pf-blue)"/>
+<text x="380" y="156" text-anchor="middle" font-size="13.5" fill="#475569">Accès séquentiel : 1 seul miss pour toute la ligne, puis le prefetcher anticipe les suivantes</text>
+</svg>

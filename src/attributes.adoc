@@ -6,3 +6,5 @@
 :revealjs_theme: beige
 :customcss: css/custom.css
 :revealjs_slideNumber: true
+:revealjs_width: 1280
+:revealjs_height: 720

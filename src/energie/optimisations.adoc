@@ -1,137 +1,224 @@
-= Optimisations de code 
+= Optimisations de code
 
-== Mesure de performance
+== Mesurer pour optimiser
 
-- On ne peut pas optimiser ce que l'on ne peut pas mesurer.
+[quote, Donald Knuth]
+C'est souvent une erreur de porter des jugements _a priori_ sur les parties d'un programme qui sont réellement critiques, car l'expérience universelle des programmeurs qui utilisent des outils de mesure montre que leurs intuitions échouent.
 
-- On peut mesurer le temps, l'énergie, la mémoire, la qualité du code.
+- On peut mesurer le temps, l'énergie, la mémoire, les compteurs matériels (cycles, défauts de cache, etc).
 
-- Souvent énergie et temps de calcul sont liés: __race to idle__.
+== Outils de mesure : sondes internes en Rust
 
-== Mesurer la performance 
-
-image::performance1.png[Mesure de performance, 500]
-
-- CPI: Cycles par Instruction. Plus les CPI sont bas plus le code est rapide.
-- Impact de la taille d'un tableau pour un accès mémoire.
-
-== Mesurer la performance 
-
-image::performance2.png[Mesure de performance, 500]
-
-- Importance d'explorer différents paramètres en entrée
-
-== Exemple
-
-- On mesure deux codes:
-    * code 1 : 8.56 secondes
-    * code 2 : 8.94 secondes
-- Accélération (__speedup__) (8.94-8.56)/8.94 = 4.2% ?
-
-== Attention au bruit de mesure
-
-image::dispersion.png[Bruit de mesure, 500]
-
-- Pas de différence significative avec 30 mesures
-- Répéter les mesures et étudier leur dispersion.
-
-== Bruit de mesure
-
-- Importance de prendre en compte le bruit de mesure.
-- Sources d'indéterminisme:
-    * Hiérarchie mémoire: Caches, TLB, Buffers E/S, Disque dur, swap
-    * Pipeline d'instructions
-    * Entrelacement des threads
-    * DVFS / C-States et P-States
-
-== Pour stabiliser les mesures
-
-- Exécutez une première fois votre programme pour charger les données dans le buffer E/S (sauf si vous souhaitez en mesurer l'effet).
-- Utiliser le _pinning_ de processus (évite que les threads soient migrés en cours d'exécution).
-- Désactivez le DVFS de votre processeur (gouverneur performance)
-- Évitez de faire tourner d'autres processus et augmentez la priorité du processus mesuré avec `nice -20`
-
-== Comment mesurer ?
-
-- Insertion de sondes directement dans le code. Pour Rust, vous pouvez utiliser le crate https://doc.rust-lang.org/1.4.0/book/benchmark-tests.html[`Bencher`].
+- En Rust, on mesure le temps directement avec `std::time::Instant` (en `--release` !) :
 
 [source,rust]
 ----
-pub fn add_two(a: i32) -> i32 {
-    a + 2
-}
+use std::hint::black_box;
+use std::time::Instant;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use test::Bencher;
+fn somme(a: &[f64]) -> f64 { a.iter().sum() }
 
-    #[bench]
-    fn bench_add_two(b: &mut Bencher) {
-        b.iter(|| add_two(2));
-    }
-}
+let a = vec![1.0_f64; 1_000_000];
+let t0 = Instant::now();
+let res = black_box(somme(&a));
+println!("Somme = {}, Temps : {:.3} ms", res, t0.elapsed().as_secs_f64() * 1000.0);
 ----
 
+[source,text]
+----
+Somme = 1000000, Temps : 1.309 ms
+----
+
+- `std::hint::black_box` empêche le compilateur d'éliminer l'appel si `res` n'est pas réutilisé.
+
+
+== Outils de mesure externes : `perf`
+
+- Sous Linux, https://perf.wiki.kernel.org/index.php/Tutorial[`perf`] lit les compteurs matériels (performance et énergie RAPL) :
+
 [source,bash]
+----
+$ perf stat -r 5 -e cycles,instructions,cache-misses ./somme_demo
+       42 150 310  cycles                                       ( +- 1.12% )
+       68 420 105  instructions   # 1,62 insn per cycle         ( +- 0.04% )
+           18 420  cache-misses                                 ( +- 2.45% )
+      0,012305 +- 0,000488 seconds time elapsed                 ( +- 3.97% )
+
+$ perf stat -r 5 -a -e duration_time,power/energy-pkg/ ./somme_demo
+            0,14   Joules power/energy-pkg/                     ( +- 4.10% )
+      0,012410 +- 0,000512 seconds time elapsed                 ( +- 4.12% )
+----
+
+- `instructions` / `cache-misses` sont *par processus*, tandis que RAPL (`-a`) mesure *tout le système* et peut nécessiter des droits privilégiés (ex. `perf_event_paranoid = -1`).
+
+[.columns]
+== Attention aux paramètres d'entrée !
+
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
+[source,rust]
+----
+// Parcours aléatoire d'un tableau de taille variable
+// (chaque nœud mesure 64 octets = 1 ligne de cache)
+let t0 = Instant::now();
+for _ in 0..steps {
+    idx = nodes[idx].next;
+}
+let latence_ns =
+    t0.elapsed().as_secs_f64() * 1e9
+    / steps as f64;
+black_box(idx);
+----
+
+- Avec seulement deux tailles testées, on pourrait croire à une croissance linéaire...
+ifdef::backend-revealjs[]
+--
+[.column]
+--
+endif::[]
+image::perf-tailles-1.svg[Mesure sur deux tailles seulement, 640]
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+== Explorer toute la plage de tailles
+
+image::perf-tailles-2.svg[Balayage complet révélant la hiérarchie mémoire, 800]
+
+- En échelle logarithmique, on observe des paliers nets : ~1.9 ns (**L1**), ~6.7 ns (**L2**), ~15–29 ns (**L3**), puis ~115 ns (**RAM**) — ce sont les niveaux de la hiérarchie mémoire détaillés ensuite.
+
+[.columns]
+== Attention au bruit de mesure
+
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
+[source,rust]
+----
+// Code 1 : boucle indexée
+let mut acc1 = 0.0_f64;
+for i in 0..n { acc1 += a[i] * b[i]; }
+
+// Code 2 : itérateur zip
+let acc2: f64 = a.iter().zip(b.iter())
+    .map(|(x, y)| x * y).sum();
+----
+ifdef::backend-revealjs[]
+--
+[.column]
+--
+endif::[]
+On mesure une seule exécution de chaque variante :
+
+- Code 1 : `16.08 ms`
+- Code 2 : `23.83 ms`
+
+Accélération de 32 % ?
+**Ne jamais conclure sur une seule mesure !**
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+== Dispersion sur 30 exécutions
+
+image::dispersion.svg[Dispersion sur 30 exécutions en Rust, 780]
+
+- Sur 30 répétitions, les deux variantes ont la même médiane (`15.82 ms`) ; les pics (~24 ms) proviennent du bruit système.
+
+== Sources d'indéterminisme
+
+- Il est indispensable de contrôler et d'étudier la dispersion des mesures.
+- Sources principales de bruit :
+  * Hiérarchie mémoire : caches, TLB, buffers E/S, disque, swap
+  * Pipeline d'instructions et prédicteur de branchements
+  * Ordonnancement et migration des _threads_
+  * Variation dynamique de fréquence (DVFS)
+
+== Pour stabiliser les mesures
+
+- Effectuer un échauffement (_warmup_) pour charger les données et stabiliser la fréquence CPU.
+- Fixer le processus sur un cœur précis avec `taskset -c 0 ./prog` (`-c 0` restreint l'exécution au cœur logique `0` et évite les migrations entre cœurs).
+- Fixer la fréquence CPU (gouverneur `performance` via `cpufreq-set` ou `cpupower`).
+- Isoler la machine (éviter d'autres processus, augmenter la priorité avec `nice -n -20`).
+- Répéter les mesures (`perf stat -r`, `criterion`) et regarder la dispersion.
+
+== Outils de mesure : le crate `criterion`
+
+- Le crate https://docs.rs/criterion/[`criterion`] s'intègre à `cargo bench` en Rust stable :
+
+[source,rust]
+----
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+fn bench_somme(c: &mut Criterion) {
+    let a = vec![1.0_f64; 1_000_000];
+    c.bench_function("somme", |b| b.iter(|| somme(black_box(&a))));
+}
+
+criterion_group!(benches, bench_somme);
+criterion_main!(benches);
+----
+
+[source,text]
 ----
 $ cargo bench
-   Compiling adder v0.0.1 (file:///home/steve/tmp/adder)
-     Running target/release/adder-91b3e234d4ed382a
-
-running 2 tests
-test tests::bench_add_two ... bench:         1 ns/iter (+/- 0)
+somme   time:   [1.281 ms 1.309 ms 1.338 ms]
 ----
 
-== Comment mesurer ?
+- `b.iter(|| ...)` répète l'exécution de la clôture; `black_box(&a)` sur l'entrée empêche LLVM de sortir `somme` de la boucle.
+- Les trois valeurs indiquent `[borne inf., estimation, borne sup.]` (intervalle de confiance à 95%)
 
-- Utiliser un outil externe. Par exemple pour mesurer des compteurs de performance: RAPL, cache misses, cycles, etc.
+[.columns]
+== Hiérarchie mémoire (`lstopo`)
 
-    - De nombreux outils disponibles (**Perf**, Likwid, MAQAO, PAPI, VTune, ...)
+ifdef::backend-revealjs[]
+[.column.is-one-third]
+--
+endif::[]
+image::lstopo.svg[Topologie mémoire Intel Core Ultra 5 228V, height=500]
+ifdef::backend-revealjs[]
+--
+[.column]
+--
+endif::[]
+Exemple concret : **Intel Core Ultra 5 228V** (8 cœurs, 30 Gio RAM) :
 
-- Sous Linux, l'outil https://perf.wiki.kernel.org/index.php/Tutorial[perf] permet d'interroger directement le noyau pour accéder à ces compteurs.
+- **L3** : `8 Mio` partagé (cœurs performants `P#0..3`)
+- **L2** : `2,5 Mio` par cœur `P#0..3` (`4 Mio` partagés pour les cœurs sobres `E#4..7`)
+- **L1** : `48 Kio` données + `64 Kio` instructions par cœur `P` (`32 Kio` / `64 Kio` par cœur `E`)
+ifdef::backend-revealjs[]
+--
+endif::[]
 
-- Exemple: pour mesurer les cycles, le nombre d'instructions, ainsi que les cache misses:
-
-[source,bash]
-----
-perf stat -e cycles,instructions,cache-misses ./programme
-----
-
-== Hiérarchie Mémoire
-
-image::arch.svg[Architecture d'un ordinateur, 500]
-
-
-Trois niveaux de cache (architectures serveur)
-
-- L3 (partagé)
-- L2 (par cœur)
-- L1 données et instruction
-
-== Latences (Nehalem)
+== Latences d'accès (mesurées sur cette machine)
 
 |===
-|Niveau | Latence
-|L1 (hit)| ~4 cycles
-|L2 (hit)| ~10 cycles
-|L3 (non partagée)| ~40 cycles
-|L3 (partagée) | 65-75 cycles
-|RAM | > 120 cycles
-|SSD | ~300 000 cycles
+| Niveau | Capacité (`cpu0`) | Latence mesurée
+| L1 (hit) | 48 Kio | ~1,9 ns
+| L2 (hit) | 2,5 Mio | ~4,5 – 6,7 ns
+| L3 (hit) | 8 Mio | ~15 – 29 ns
+| RAM | 30 Gio | ~90 – 118 ns
+| SSD | — | ~100 µs (~300 000 cycles)
 |===
 
-== Fonctionnement basique d'un Cache
+- On retrouve directement les paliers observés expérimentalement en Rust sur le balayage de tailles précédent.
 
-. Le CPU demande une adresse mémoire au L1.
-. Si l'adresse est disponible dans le L1, c'est un *hit*.
-. Sinon c'est un *miss*, le L1 demande au niveau supérieur, ici le L2, de lui transmettre la donnée.
-. La demande remonte la hiérarchie mémoire jusqu'à ce que la donnée soit trouvée.
+== Fonctionnement basique d'un cache
 
-== Fonctionnement basique d'un Cache
+. Le CPU demande une adresse mémoire au L1 (`48 Kio`).
+. Si l'adresse est présente dans le L1, c'est un *hit* (`~1,9 ns`).
+. Sinon c'est un *miss*, le L1 demande la donnée au niveau supérieur (`L2` `2,5 Mio` → `L3` `8 Mio` → `RAM`).
+. La ligne de cache (`64 octets`) redescend la hiérarchie jusqu'au L1.
 
-- Pour être efficace les données sont déplacées par paquets, les *lignes de cache* (typiquement 64 octets).
-- Le bus mémoire détecte les accès linéaires à la mémoire et récupère les données en avance (_prefetcher_).
+image::cache-lookup.svg[Fonctionnement basique d'un cache, 780]
+
+== Lignes de cache et _prefetcher_
+
+- Les données sont transférées par blocs contigus : les *lignes de cache* (typiquement 64 octets).
+- Le matériel détecte les accès séquentiels et précharge les lignes suivantes en avance (_prefetcher_).
 
 [source,rust]
 ----
@@ -140,124 +227,263 @@ for i in 0..n {
 }
 ----
 
-image:prefetch.png[Prefetcher, 200]
+image::prefetch.svg[Prefetcher, 720]
 
 == Politique de remplacement
 
-- LRU (Last Recently Used)
-- Les données les plus anciennement utilisées sont remplacées en premier.
-- Des politiques complexes permettent d'assurer la cohérence des données partagées en L3.
+- Typiquement **LRU** (*Least Recently Used*, ou variantes pseudo-LRU) :
+  * les lignes les moins récemment utilisées sont remplacées en premier ;
+  * des protocoles de cohérence gèrent les données partagées entre cœurs.
 
 == Problème de capacité
 
 [source,rust]
 ----
 for i in 0..n {
-  for j in 0..n {
-    a[j][i] += 1;  // a[j][i] => a[j*n+i]
-  }
-}
-----
-
-
-image:capacity.png[Capacity, 600]
-
-== Importance de la localité
-
-Pour optimiser l'accès à la mémoire, on conçoit notre algorithme pour maximiser
-
-- Localité spatiale: on accède aux données dans l'ordre des adresses mémoire 
-- Localité temporelle: si des données sont réutilisées, on diminue le temps entre deux réutilisations pour éviter qu'elles soient remplacées entre temps dans le cache. 
-
-== Un exemple d'optimisation: transformations de boucles
-
-- Transformations de boucles: souvent effectuées automatiquement par le compilateur.
-
-- Pour que la transformation soit faite, le compilateur doit prouver que la sémantique du code ne change pas.
-
-- Dans certains cas, le compilateur n'arrive pas à faire tout seul la transformation.
-
-== Loop interchange
-
-[source,rust]
-----
-for i in 0..n {
-	for j in 0..n {
-		a[j][i] = a[j][i]*a[j][i];
+    for j in 0..n {
+        a[j][i] += 1; // parcours par colonne : saut de n éléments en mémoire !
     }
 }
 ----
 
-Comment optimiser ce code ?
+image::capacity.svg[Problème de capacité, 740]
 
+== Importance de la localité
+
+Pour optimiser les accès mémoire, on conçoit l'algorithme de façon à maximiser :
+
+- **Localité spatiale** : accéder aux données dans l'ordre contigu des adresses mémoire (profiter de toute la ligne de cache et du _prefetcher_).
+- **Localité temporelle** : réutiliser une donnée déjà chargée avant qu'elle ne soit évincée du cache.
+
+== Transformations de boucles
+
+- De nombreuses transformations de boucles peuvent être effectuées automatiquement par le compilateur (`--release`).
+- Mais le compilateur doit **prouver** que la sémantique reste identique (absence d'aliasing, bornes, non-associativité des flottants).
+- En pratique, le développeur doit souvent structurer ses boucles pour aider le compilateur.
+
+[.columns]
 == Loop interchange
 
-image:loop-interchange.png[Loop interchange]
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
+[source,rust]
+----
+// Avant : mauvaise localité spatiale
+for i in 0..n {
+    for j in 0..n {
+        a[j][i] = a[j][i] * a[j][i];
+    }
+}
 
+// Après : parcours contigu en mémoire
+for j in 0..n {
+    for i in 0..n {
+        a[j][i] = a[j][i] * a[j][i];
+    }
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column]
+--
+endif::[]
+image::loop-interchange.svg[Loop interchange, 560]
+ifdef::backend-revealjs[]
+--
+endif::[]
 
+[.columns.wrap]
 == Loop-invariant code motion
+
+ifdef::backend-revealjs[]
+[.column.is-half]
+--
+endif::[]
+Avant :
 
 [source,rust]
 ----
 for i in 0..n {
-	for j in 0..n {
-		a[i][j] = c[i] + b[i][j]
-	}
+    for j in 0..n {
+        a[i][j] = c[i] + b[i][j];
+    }
 }
 ----
+ifdef::backend-revealjs[]
+--
+[.column.is-half]
+--
+endif::[]
+Après :
 
-Comment optimiser ce code ?
+[source,rust]
+----
+for i in 0..n {
+    let k = c[i]; // chargé 1 fois par ligne
+    for j in 0..n {
+        a[i][j] = k + b[i][j];
+    }
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column.is-full]
+--
+endif::[]
+- Sort de la boucle interne les calculs ou chargements qui ne dépendent pas de `j`.
+ifdef::backend-revealjs[]
+--
+endif::[]
 
-== Loop-invariant code motion
+[.columns.wrap]
+== Découpage de branchement (_If hoisting / loop splitting_)
 
-image:loop-invariant-cm.png[Loop invariant code motion]
-
-== If hoisting
+ifdef::backend-revealjs[]
+[.column.is-half]
+--
+endif::[]
+Avant :
 
 [source,rust]
 ----
 for i in 1..n {
-  a[i] = a[i] + 1 ;
-  if i<3 {
-    b[i] = a[i]*c[i];
-  } else {
-    b[i] = a[i-1]*b[i-1];
-  }
+    a[i] = a[i] + 1;
+    if i < 3 {
+        b[i] = a[i] * c[i];
+    } else {
+        b[i] = a[i - 1] * b[i - 1];
+    }
 }
 ----
+ifdef::backend-revealjs[]
+--
+[.column.is-half]
+--
+endif::[]
+Après :
 
-Comment optimiser ce code ?
+[source,rust]
+----
+for i in 1..3.min(n) {
+    a[i] = a[i] + 1;
+    b[i] = a[i] * c[i];
+}
+for i in 3..n {
+    a[i] = a[i] + 1;
+    b[i] = a[i - 1] * b[i - 1];
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column.is-full]
+--
+endif::[]
+- Supprime le test conditionnel de la boucle chaude et facilite la vectorisation.
+ifdef::backend-revealjs[]
+--
+endif::[]
 
-== If hoisting
-
-image:if-hoisting.png[If hoisting]
-
-
+[.columns.wrap]
 == Loop fusion / fission
 
-image:loop-fusion-fission.png[Loop fusion - fission]
-
-- Comment choisir ? Cela dépend de l'architecture. Les compilateurs utilisent des modèles de coût. 
-
-== Loop peeling
+ifdef::backend-revealjs[]
+[.column.is-half]
+--
+endif::[]
+Fusionnée :
 
 [source,rust]
 ----
 for i in 0..n {
-	a[i] = a[i] + 2;
-}
-for i in 2..n {
-	a[i] = a[i] * 2;
+    a[i] = a[i] + c;
+    x[i + 1] = x[i] * 7 + x[i + 1] + a[i];
 }
 ----
 
-Comment optimiser ce code ?
+- Meilleure localité sur `a[i]`
+- Moins d'instructions de contrôle
+ifdef::backend-revealjs[]
+--
+[.column.is-half]
+--
+endif::[]
+Séparée (fission) :
 
+[source,rust]
+----
+for i in 0..n {
+    a[i] = a[i] + c;
+}
+for i in 0..n {
+    x[i + 1] = x[i] * 7 + x[i + 1] + a[i];
+}
+----
+
+- Diminue la pression sur les registres
+- Facilite parfois la vectorisation
+ifdef::backend-revealjs[]
+--
+[.column.is-full]
+--
+endif::[]
+- Le choix dépend de l'architecture (modèles de coût du compilateur).
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+[.columns.wrap]
 == Loop peeling
 
-image:loop-peeling.png[Loop Peeling]
+ifdef::backend-revealjs[]
+[.column.is-half]
+--
+endif::[]
+Avant :
 
-== Loop unroll
+[source,rust]
+----
+for i in 0..n {
+    a[i] = a[i] + 2;
+}
+for i in 2..n {
+    a[i] = a[i] * 2;
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column.is-half]
+--
+endif::[]
+Après (_peeling_ puis _fusion_) :
+
+[source,rust]
+----
+a[0] = a[0] + 2;
+a[1] = a[1] + 2;
+for i in 2..n {
+    a[i] = 2 * a[i] + 4;
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column.is-full]
+--
+endif::[]
+- On « pèle » les premières (ou dernières) itérations pour aligner les bornes et permettre une fusion.
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+[.columns.wrap]
+== Loop unrolling (déroulage)
+
+ifdef::backend-revealjs[]
+[.column.is-half]
+--
+endif::[]
+Avant :
 
 [source,rust]
 ----
@@ -265,53 +491,245 @@ for i in 0..n {
     c[i] += b[i] + a[i];
 }
 ----
-
-Comment optimiser ce code ?
-
-== Loop unroll
-
-image:loop-unroll.png[Loop Unroll]
-
-- Réduit le surcoût de contrôle.
-- Parfois, permet de vectoriser le code.
-- Parfois, fait apparaître des simplifications.
-
-== Loop blocking ou tiling
-
-image:loop-blocking.png[Loop Blocking]
-
-- `n` grand: `b[]` ne rentre pas dans le cache.
-- Localité spatiale: ok.
-- Localité temporelle: problème sur `b[j]`.
-- Comment optimiser ce code ?
-
-== Loop blocking ou tiling
-
-image:loop-blocking2.png[Loop Blocking]
-
-== Un mot rapide sur la parallélisation
-
-Les architectures récentes sont multicœurs, pour en tirer parti les programmes peuvent être _parallélisés_.
-
-- Décomposer le travail en parties indépendantes. Chaque partie sera effectuée par un _thread_ dans un cœur différent.
-
-- Limiter au maximum les communications et synchronisations entre threads (coûteuses).
-
-== Exemple de parallélisation en rust
+ifdef::backend-revealjs[]
+--
+[.column.is-half]
+--
+endif::[]
+Après (facteur 2, si `n` pair) :
 
 [source,rust]
 ----
-extern crate rayon;
-use rayon::prelude::*;
-fn main() {
-    let mut v = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    
-    v.par_chunks_mut(3).for_each(|chunk| {
-        for x in chunk { *x *= 2; }
-    });   
+for i in (0..n).step_by(2) {
+    c[i] += b[i] + a[i];
+    c[i + 1] += b[i + 1] + a[i + 1];
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column.is-full]
+--
+endif::[]
+- Réduit le surcoût de contrôle de boucle et expose le parallélisme d'instructions (ILP).
+- Facilite la **vectorisation**.
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+== Vectorisation (SIMD)
+
+- Les processeurs modernes disposent d'unités **SIMD** (*Single Instruction, Multiple Data*, ex. SSE, AVX) traitant 4 à 16 nombres en une seule instruction.
+
+image::simd.svg[Exécution scalaire vs vectorielle SIMD, 720]
+
+- Conditions pour que `rustc`/LLVM auto-vectorise :
+  * accès mémoire **contigus** (pas de sauts / *stride-1*) ;
+  * pas de dépendances entre itérations ni de branchements complexes.
+
+[.columns.wrap]
+== Loop blocking ou _tiling_
+
+ifdef::backend-revealjs[]
+[.column.is-half]
+--
+endif::[]
+[source,rust]
+----
+const S: usize = 64; // taille de bloc
+assert!(n % S == 0);
+
+for ii in (0..n).step_by(S) {
+    for jj in (0..n).step_by(S) {
+        for i in ii..ii + S {
+            for j in jj..jj + S {
+                c[i] += a[i][j] * b[j];
+            }
+        }
+    }
+}
+----
+ifdef::backend-revealjs[]
+--
+[.column.is-half]
+--
+endif::[]
+image::loop-blocking.svg[Principe du loop blocking, 560]
+ifdef::backend-revealjs[]
+--
+[.column.is-full]
+--
+endif::[]
+- Quand `n` est grand, `b[..]` ne tient pas en cache → on travaille par blocs de taille `S` qui restent en cache.
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+== Étude de cas : multiplication de matrices en Rust
+
+Partons de l'implémentation naïve de `C = A × B` (`td_mult_mat`) :
+
+[source,rust]
+----
+pub fn multiply(a: &Matrix, b: &Matrix) -> Matrix {
+    assert!(a.n == b.n);
+    let n = a.n;
+    let mut c = Matrix::zero(n);
+
+    for i in 0..n {
+        for j in 0..n {
+            for k in 0..n {
+                c[(i, j)] += a[(i, k)] * b[(k, j)];
+            }
+        }
+    }
+    c
 }
 ----
 
-- `par_chunks` et `par_chunks_mut` décomposent un itérateur en morceaux (`chunks`) indépendants.
-- la méthode `for_each` va exécuter un traitement parallèle sur chaque morceau.
-- `|chunk| { ... }` est une clôture. C'est une fonction anonyme qui peut capturer les variables de l'environnement où elle est déclarée. 
+- **Problème** (matrices stockées ligne par ligne) : dans la boucle interne sur `k`, `b[(k, j)]` saute de `n` éléments à chaque itération → mauvaise localité spatiale et impossible à auto-vectoriser efficacement.
+
+== Étape 1 : Debug vs `--release` et interversion `(i, k, j)`
+
+- On compile en `--release` et on intervertit les boucles `k` et `j` (avec mise en invariant de `a[(i, k)]`) :
+
+[source,rust]
+----
+for i in 0..n {
+    for k in 0..n {
+        let a_ik = a[(i, k)]; // invariant de la boucle sur j
+        for j in 0..n {
+            c[(i, j)] += a_ik * b[(k, j)];
+        }
+    }
+}
+----
+
+- `c[(i, j)]` et `b[(k, j)]` sont désormais parcourus **de façon contiguë** → auto-vectorisation SIMD (`mulpd` / `vfmaddpd`).
+
+[.columns]
+== Gains : Debug, Release et Vectorisation
+
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
+image::gains-opt.svg[Gains normalisés Debug vs Release vs Vecto, 420]
+ifdef::backend-revealjs[]
+--
+[.column]
+--
+endif::[]
+Mesures sur matrices `1024 × 1024` (Intel i7-9850H, 6 cœurs, L3 12 Mo) :
+
+- **Debug → Release** : **~20×** plus rapide et **~19×** moins d'énergie.
+- **Release → Vecto `(i, k, j)`** : encore **~7×** plus vite.
+- Ici temps et énergie progressent du **même ordre de grandeur**.
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+== Étape 2 : Problème de localité temporelle sur grandes matrices
+
+- Dans l'ordre `(i, k, j)` sur de grandes matrices (ex. `4608 × 4608`, 21 M d'éléments par matrice) :
+  * `a[(i, k)]` est réutilisé à chaque itération de `j` (très bien).
+  * `c[(i, j)]` est revisité à chaque `k` (une ligne de taille `n` en cache).
+  * **`b[(k, j)]` n'est réutilisé qu'au `i` suivant** : entre temps, toute la matrice `B` (> L3) a été parcourue et évincée du cache !
+
+→ Solution : **multiplication par blocs (_tiling_)**.
+
+== Étape 2 : Multiplication par blocs (`BS × BS`)
+
+[latexmath]
+++++
+\begin{bmatrix}
+    {\color{red} A_{11}} & A_{12} \\
+    A_{21}               & A_{22}
+\end{bmatrix} \times \begin{bmatrix}
+    {\color{blue} B_{11}} & B_{12} \\
+    B_{21}                & B_{22}
+\end{bmatrix} = \begin{bmatrix}
+    {\color{red} A_{11}}{\color{blue} B_{11}} + A_{12}B_{21} & A_{11}B_{12} + A_{12}B_{22} \\
+    A_{21}B_{11} + A_{22}B_{21}                              & A_{21}B_{12} + A_{22}B_{22}
+\end{bmatrix}
+++++
+
+- On découpe `A`, `B` et `C` en sous-matrices de taille `BS × BS` (ex. `BS = 64`) choisie pour que les blocs actifs tiennent dans le cache L2/L3.
+
+== Étape 2 : Implémentation par blocs en Rust
+
+[source,rust]
+----
+const BS: usize = 64;
+for ii in (0..n).step_by(BS) {
+    for kk in (0..n).step_by(BS) {
+        for jj in (0..n).step_by(BS) {
+            for i in ii..(ii + BS).min(n) {
+                for k in kk..(kk + BS).min(n) {
+                    let a_ik = a[(i, k)];
+                    for j in jj..(jj + BS).min(n) {
+                        c[(i, j)] += a_ik * b[(k, j)];
+                    }
+                }
+            }
+        }
+    }
+}
+----
+
+- La boucle interne sur `j` reste contiguë et **vectorisée**, tout en réutilisant les blocs en cache.
+
+== Étape 3 : Parallélisation multicœur avec `rayon`
+
+- Les architectures actuelles sont multicœurs : on décompose le travail en tranches indépendantes exécutées par un *pool* de threads.
+- Sur `C = A × B`, chaque thread calcule un ensemble exclusif de lignes de `C` et lit `B` en lecture seule :
+
+image::matmul-rayon.svg[Parallélisation par tranches de matrices, 640]
+
+- **Aucune synchronisation pendant le calcul** et pas de *false sharing* (tranches séparées).
+
+== Étape 3 : Code Rust avec `rayon`
+
+[source,rust]
+----
+use rayon::prelude::*;
+
+let cc = c.values.par_chunks_mut(n * BS);
+let ca = a.values.par_chunks(n * BS);
+
+cc.zip(ca).for_each(|(c_slice, a_slice)| {
+    multiply_block(c_slice, a_slice, &b.values, n, BS);
+});
+----
+
+- `par_chunks` / `par_chunks_mut` découpent les matrices en tranches mutuellement exclusives ; le système de propriété de Rust garantit l'absence de *data race* à la compilation.
+- Sur de grands systèmes (NUMA), on veille aussi à l'affinité des threads (*pinning*).
+
+[.columns]
+== Découplage des gains temps / énergie
+
+ifdef::backend-revealjs[]
+[.column]
+--
+endif::[]
+image::gains-mm.svg[Gains Vecto vs Blocs vs Rayon sur 4608x4608, 420]
+ifdef::backend-revealjs[]
+--
+[.column]
+--
+endif::[]
+Sur `4608 × 4608` (6 cœurs, i7-9850H) :
+
+- **Blocs** : ~1.6× plus rapide, ~1.8× moins d'énergie que `Vecto`.
+- **Rayon + Blocs** : **~6×** plus rapide, mais **~3.8×** moins d'énergie.
+- **Découplage** : allumer 6 cœurs augmente la puissance instantanée ; le gain énergétique reste inférieur au gain de temps !
+ifdef::backend-revealjs[]
+--
+endif::[]
+
+== En pratique : bibliothèques et conclusion
+
+- Ne pas réinventer le produit matriciel à la main : utiliser des bibliothèques optimisées et réglées pour le matériel (**OpenBLAS**, **Intel MKL**, crates Rust `ndarray`, cuBLAS sur GPU).
+- **Démarche d'optimisation efficace** :
+  . **Mesurer** proprement (outils adaptés, `--release`, répétitions).
+  . **Optimiser les accès mémoire** (localité spatiale et temporelle) et **vectoriser**.
+  . **Paralléliser** en gardant un œil sur le compromis **temps vs. énergie**.

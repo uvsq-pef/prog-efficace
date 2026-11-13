@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="sans-serif">
+<defs>
+  <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#b91c1c"/>
+  </marker>
+  <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#15803d"/>
+  </marker>
+  <marker id="arr-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155"/>
+  </marker>
+</defs>
+<text x="190.0" y="26" text-anchor="middle" font-size="18" font-weight="bold" fill="#b91c1c">Avant : parcours par colonne</text>
+<rect x="95" y="68" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="133" y="68" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="171" y="68" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="209" y="68" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="247" y="68" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="95" y="106" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="133" y="106" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="171" y="106" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="209" y="106" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="247" y="106" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="95" y="144" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="133" y="144" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="171" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="209" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="247" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="95" y="182" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="133" y="182" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="171" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="209" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="247" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="95" y="220" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="133" y="220" width="38" height="38" fill="#fee2e2" stroke="#475569" stroke-width="1.5"/>
+<rect x="171" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="209" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="247" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<line x1="114.0" y1="78" x2="114.0" y2="248" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arr-red)"/>
+<line x1="152.0" y1="78" x2="152.0" y2="248" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#arr-red)"/>
+<text x="85" y="92" text-anchor="end" font-size="15" font-weight="bold" fill="#b91c1c">Miss</text>
+<text x="85" y="130" text-anchor="end" font-size="15" font-weight="bold" fill="#b91c1c">Miss</text>
+<text x="85" y="168" text-anchor="end" font-size="15" font-weight="bold" fill="#b91c1c">Miss</text>
+<text x="85" y="206" text-anchor="end" font-size="15" font-weight="bold" fill="#b91c1c">...</text>
+<text x="190.0" y="286" text-anchor="middle" font-size="14" fill="#475569">Saut de n éléments à chaque accès</text>
+<line x1="345" y1="150" x2="405" y2="150" stroke="#334155" stroke-width="3" marker-end="url(#arr-dark)"/>
+<text x="560.0" y="26" text-anchor="middle" font-size="18" font-weight="bold" fill="#15803d">Après : parcours par ligne</text>
+<rect x="465" y="68" width="38" height="38" fill="#fecaca" stroke="#475569" stroke-width="1.5"/>
+<rect x="503" y="68" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="541" y="68" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="579" y="68" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="617" y="68" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="465" y="106" width="38" height="38" fill="#fecaca" stroke="#475569" stroke-width="1.5"/>
+<rect x="503" y="106" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="541" y="106" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="579" y="106" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="617" y="106" width="38" height="38" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="465" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="503" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="541" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="579" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="617" y="144" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="465" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="503" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="541" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="579" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="617" y="182" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="465" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="503" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="541" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="579" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="617" y="220" width="38" height="38" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<line x1="475" y1="87.0" x2="645" y2="87.0" stroke="#15803d" stroke-width="2.5" marker-end="url(#arr-green)"/>
+<line x1="475" y1="125.0" x2="645" y2="125.0" stroke="#15803d" stroke-width="2.5" marker-end="url(#arr-green)"/>
+<text x="484.0" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#b91c1c">Miss</text>
+<text x="563.8" y="58" text-anchor="middle" font-size="15" font-weight="bold" fill="#15803d">Hit  Hit  Hit ...</text>
+<text x="560.0" y="286" text-anchor="middle" font-size="14" fill="#475569">Accès contigus en ligne de cache</text>
+</svg>

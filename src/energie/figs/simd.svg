@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 260" font-family="sans-serif">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155"/>
+  </marker>
+</defs>
+<text x="150" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#1e293b">Exécution scalaire (SISD)</text>
+<rect x="46" y="52" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="72.0" y="74" text-anchor="middle" font-size="13" fill="#1e293b">a[0]</text>
+<rect x="46" y="102" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="72.0" y="124" text-anchor="middle" font-size="13" fill="#1e293b">b[0]</text>
+<rect x="98" y="52" width="52" height="34" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="124.0" y="74" text-anchor="middle" font-size="13" fill="#1e293b">a[1]</text>
+<rect x="98" y="102" width="52" height="34" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="124.0" y="124" text-anchor="middle" font-size="13" fill="#1e293b">b[1]</text>
+<rect x="150" y="52" width="52" height="34" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="176.0" y="74" text-anchor="middle" font-size="13" fill="#1e293b">a[2]</text>
+<rect x="150" y="102" width="52" height="34" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="176.0" y="124" text-anchor="middle" font-size="13" fill="#1e293b">b[2]</text>
+<rect x="202" y="52" width="52" height="34" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="228.0" y="74" text-anchor="middle" font-size="13" fill="#1e293b">a[3]</text>
+<rect x="202" y="102" width="52" height="34" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="228.0" y="124" text-anchor="middle" font-size="13" fill="#1e293b">b[3]</text>
+<line x1="72.0" y1="138" x2="72.0" y2="178" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="46" y="184" width="52" height="34" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+<text x="72.0" y="206" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">c[0]</text>
+<text x="150" y="244" text-anchor="middle" font-size="14" fill="#475569">1 opération par instruction (4 cycles)</text>
+<line x1="365" y1="20" x2="365" y2="245" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5,5"/>
+<text x="575" y="28" text-anchor="middle" font-size="18" font-weight="bold" fill="#1d4ed8">Exécution vectorielle (SIMD — ex. AVX)</text>
+<rect x="445" y="52" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="471.0" y="74" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">a[0]</text>
+<rect x="445" y="102" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="471.0" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">b[0]</text>
+<line x1="471.0" y1="138" x2="471.0" y2="178" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="445" y="184" width="52" height="34" fill="#dcfce7" stroke="#15803d" stroke-width="1.8"/>
+<text x="471.0" y="206" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">c[0]</text>
+<rect x="497" y="52" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="523.0" y="74" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">a[1]</text>
+<rect x="497" y="102" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="523.0" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">b[1]</text>
+<line x1="523.0" y1="138" x2="523.0" y2="178" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="497" y="184" width="52" height="34" fill="#dcfce7" stroke="#15803d" stroke-width="1.8"/>
+<text x="523.0" y="206" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">c[1]</text>
+<rect x="549" y="52" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="575.0" y="74" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">a[2]</text>
+<rect x="549" y="102" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="575.0" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">b[2]</text>
+<line x1="575.0" y1="138" x2="575.0" y2="178" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="549" y="184" width="52" height="34" fill="#dcfce7" stroke="#15803d" stroke-width="1.8"/>
+<text x="575.0" y="206" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">c[2]</text>
+<rect x="601" y="52" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="627.0" y="74" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">a[3]</text>
+<rect x="601" y="102" width="52" height="34" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="627.0" y="124" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a8a">b[3]</text>
+<line x1="627.0" y1="138" x2="627.0" y2="178" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="601" y="184" width="52" height="34" fill="#dcfce7" stroke="#15803d" stroke-width="1.8"/>
+<text x="627.0" y="206" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">c[3]</text>
+<rect x="433" y="146" width="232" height="24" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+<text x="549" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400e">+  (vaddpd : 1 instruction)</text>
+<text x="575" y="244" text-anchor="middle" font-size="14" fill="#475569">4 × f64 (256 bits) traités en parallèle</text>
+</svg>
