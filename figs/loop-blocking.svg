@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" font-family="sans-serif">
+<defs>
+  <marker id="arr-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155"/>
+  </marker>
+</defs>
+<text x="170" y="26" text-anchor="middle" font-size="17" font-weight="bold" fill="#b91c1c">Sans blocking (n grand)</text>
+<text x="196" y="42" text-anchor="middle" font-size="13" fill="#1e293b">b[j]</text>
+<rect x="140" y="48" width="28" height="28" fill="#fecaca" stroke="#b91c1c" stroke-width="1.5"/>
+<rect x="168" y="48" width="28" height="28" fill="#fecaca" stroke="#b91c1c" stroke-width="1.5"/>
+<rect x="196" y="48" width="28" height="28" fill="#fecaca" stroke="#b91c1c" stroke-width="1.5"/>
+<rect x="224" y="48" width="28" height="28" fill="#fecaca" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="77" y="152" text-anchor="end" font-size="13" fill="#1e293b">c[i]</text>
+<rect x="85" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="85" y="124" width="28" height="28" fill="#bfdbfe" stroke="#475569" stroke-width="1.5"/>
+<rect x="85" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="85" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="140" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="168" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="196" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="224" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="140" y="124" width="28" height="28" fill="#dbeafe" stroke="#475569" stroke-width="1.5"/>
+<rect x="168" y="124" width="28" height="28" fill="#dbeafe" stroke="#475569" stroke-width="1.5"/>
+<rect x="196" y="124" width="28" height="28" fill="#dbeafe" stroke="#475569" stroke-width="1.5"/>
+<rect x="224" y="124" width="28" height="28" fill="#dbeafe" stroke="#475569" stroke-width="1.5"/>
+<rect x="140" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="168" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="196" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="224" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="140" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="168" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="196" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="224" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<text x="170" y="236" text-anchor="middle" font-size="13" fill="#475569">b[0..n] évincé du cache à chaque ligne i</text>
+<line x1="335" y1="145" x2="395" y2="145" stroke="#334155" stroke-width="3" marker-end="url(#arr-b)"/>
+<text x="565" y="26" text-anchor="middle" font-size="17" font-weight="bold" fill="#15803d">Avec blocking (blocs s × s)</text>
+<text x="591" y="42" text-anchor="middle" font-size="13" fill="#1e293b">b[j] (tranche s)</text>
+<rect x="535" y="48" width="28" height="28" fill="#bbf7d0" stroke="#15803d" stroke-width="1.5"/>
+<rect x="563" y="48" width="28" height="28" fill="#bbf7d0" stroke="#15803d" stroke-width="1.5"/>
+<rect x="591" y="48" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="619" y="48" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<text x="472" y="152" text-anchor="end" font-size="13" fill="#1e293b">c[i]</text>
+<rect x="480" y="96" width="28" height="28" fill="#bbf7d0" stroke="#15803d" stroke-width="1.5"/>
+<rect x="480" y="124" width="28" height="28" fill="#bbf7d0" stroke="#15803d" stroke-width="1.5"/>
+<rect x="480" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="480" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="535" y="96" width="28" height="28" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="563" y="96" width="28" height="28" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="591" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="619" y="96" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="535" y="124" width="28" height="28" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="563" y="124" width="28" height="28" fill="#dcfce7" stroke="#475569" stroke-width="1.5"/>
+<rect x="591" y="124" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="619" y="124" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="535" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="563" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="591" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="619" y="152" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="535" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="563" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="591" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<rect x="619" y="180" width="28" height="28" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+<line x1="535" y1="96" x2="535" y2="208" stroke="#1e293b" stroke-width="2"/>
+<line x1="535" y1="96" x2="647" y2="96" stroke="#1e293b" stroke-width="2"/>
+<line x1="591" y1="96" x2="591" y2="208" stroke="#1e293b" stroke-width="2"/>
+<line x1="535" y1="152" x2="647" y2="152" stroke="#1e293b" stroke-width="2"/>
+<line x1="647" y1="96" x2="647" y2="208" stroke="#1e293b" stroke-width="2"/>
+<line x1="535" y1="208" x2="647" y2="208" stroke="#1e293b" stroke-width="2"/>
+<text x="565" y="236" text-anchor="middle" font-size="13" fill="#475569">La tranche de b reste en cache pour s lignes</text>
+</svg>
